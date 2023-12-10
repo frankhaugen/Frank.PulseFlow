@@ -19,6 +19,24 @@ integration into any system architecture.
 - **Simple and Easy to Use**: PulseFlow is simple and easy to use, with a straightforward API and minimal configuration
   requirements.
 
+### Illustration
+
+```mermaid
+graph TD
+    Pulse[Pulse: Data/Messages] -->|transmitted via| Conduit[Conduit: Message Pathway]
+    Conduit -->|delivered to| Nexus[Nexus: Processing Service]
+    Nexus -->|processed by| PulseFlow[PulseFlow: Message Handler]
+    PulseFlow -->|manipulates| Pulse
+
+In this Mermaid diagram:
+- **Pulse** is shown as the starting point for data/messages.
+- **Conduit** is represented as the pathway for transmitting messages.
+- **Nexus** is the central processing service.
+- **PulseFlow** is depicted as handling and manipulating the messages.
+
+When you include this in a GitHub Markdown file, GitHub will render the Mermaid diagram as a visual graph. Remember to remove the extra backticks (```) in the beginning and end when adding this to your README.
+```
+
 ### Use Cases
 
 PulseFlow is a general-purpose messaging system that can be used in a wide variety of applications. It's particularly
