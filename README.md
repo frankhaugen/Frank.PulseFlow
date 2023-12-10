@@ -27,6 +27,7 @@ graph TD
     Conduit -->|delivered to| Nexus[Nexus: Processing Service]
     Nexus -->|processed by| PulseFlow[PulseFlow: Message Handler]
     PulseFlow -->|manipulates| Pulse
+```
 
 In this Mermaid diagram:
 - **Pulse** is shown as the starting point for data/messages.
@@ -35,7 +36,6 @@ In this Mermaid diagram:
 - **PulseFlow** is depicted as handling and manipulating the messages.
 
 When you include this in a GitHub Markdown file, GitHub will render the Mermaid diagram as a visual graph. Remember to remove the extra backticks (```) in the beginning and end when adding this to your README.
-```
 
 ### Use Cases
 
