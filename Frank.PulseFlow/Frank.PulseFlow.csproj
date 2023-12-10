@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>true</IsPackable>
+        <Description>My awesome library</Description>
+        <PackageTags>my,awesome,library</PackageTags>
+        <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+        <PackageProjectUrl></PackageProjectUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0"/>
+    </ItemGroup>
+
+</Project>
