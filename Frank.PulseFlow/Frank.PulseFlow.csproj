@@ -2,10 +2,10 @@
 
     <PropertyGroup>
         <IsPackable>true</IsPackable>
-        <Description>My awesome library</Description>
-        <PackageTags>my,awesome,library</PackageTags>
+        <OutputType>Library</OutputType>
+        <Description>PulseFlow uses Channel -mechanism for internal messaging</Description>
+        <PackageTags>Pulse,Flow,PulseFlow</PackageTags>
         <PackageReleaseNotes>Initial release</PackageReleaseNotes>
-        <PackageProjectUrl></PackageProjectUrl>
     </PropertyGroup>
 
     <ItemGroup>
