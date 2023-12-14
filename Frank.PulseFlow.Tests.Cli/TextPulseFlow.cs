@@ -1,11 +1,18 @@
 namespace Frank.PulseFlow.Tests.Cli;
 
-public class TextPulseFlow(ILogger<TextPulseFlow> logger) : IPulseFlow
+public class TextPulseFlow : IPulseFlow
 {
+    private readonly ILogger<TextPulseFlow> _logger;
+
+    public TextPulseFlow(ILogger<TextPulseFlow> logger)
+    {
+        _logger = logger;
+    }
+
     public async Task HandleAsync(IPulse message, CancellationToken cancellationToken)
     {
         if (message is TextPulse textMessage)
-            logger.LogInformation("Received text message: {Text}", textMessage.Text);
+            _logger.LogInformation("Received text message: {Text}", textMessage.Text);
         await Task.CompletedTask;
     }
 
