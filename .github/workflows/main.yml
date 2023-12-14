@@ -1,5 +1,8 @@
 name: .NET CI/CD Workflow
 
+env:
+  dotnet_version: '7.0.x'
+
 on:
   pull_request:
     branches: [main]
@@ -32,15 +35,12 @@ jobs:
   build_and_test:
     needs: prepare_versions
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dotnet-version: ['7.0.x', '8.0.x']
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+          dotnet-version: ${{ dotnet_version }}
       - name: Build (Conditional Versioning)
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ] || [ "${{ github.event_name }}" = "push" ]; then
@@ -63,15 +63,12 @@ jobs:
     needs: [prepare_versions, build_and_test]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dotnet-version: ['7.0.x', '8.0.x']
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+          dotnet-version: ${{ dotnet_version }}
       - name: Download Artifacts
         uses: actions/download-artifact@v2
         with:
@@ -85,15 +82,12 @@ jobs:
     needs: [prepare_versions, build_and_test]
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dotnet-version: ['7.0.x', '8.0.x']
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+          dotnet-version: ${{ dotnet_version }}
       - name: Download Artifacts
         uses: actions/download-artifact@v2
         with:
