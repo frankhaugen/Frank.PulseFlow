@@ -38,8 +38,6 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '8.0.x'
-      - name: Restore dependencies
-        run: dotnet restore
       - name: Build (Conditional Versioning)
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ] || [ "${{ github.event_name }}" = "push" ]; then
@@ -47,7 +45,7 @@ jobs:
           elif [ "${{ github.event_name }}" = "release" ]; then
             VERSION=${{ needs.prepare_versions.outputs.ReleaseVersion }}
           fi
-          dotnet build --configuration Release --no-restore /p:Version=$VERSION
+          dotnet build --configuration Release /p:Version=$VERSION
       - name: Test
         run: dotnet test --configuration Release --no-build
       - name: Upload Artifacts
