@@ -31,7 +31,6 @@ jobs:
 
   build_and_test:
     needs: prepare_versions
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -41,10 +40,16 @@ jobs:
           dotnet-version: '8.0.x'
       - name: Restore dependencies
         run: dotnet restore
-      - name: Build
-        run: dotnet --configuration Release build --configuration Release --no-restore /p:Version=${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }}
+      - name: Build (Conditional Versioning)
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ] || [ "${{ github.event_name }}" = "push" ]; then
+            VERSION=${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }}
+          elif [ "${{ github.event_name }}" = "release" ]; then
+            VERSION=${{ needs.prepare_versions.outputs.ReleaseVersion }}
+          fi
+          dotnet build --configuration Release --no-restore /p:Version=$VERSION
       - name: Test
-        run: dotnet --configuration Release test --no-build
+        run: dotnet test --configuration Release --no-build
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
