@@ -50,7 +50,7 @@ jobs:
           elif [ "${{ github.event_name }}" = "release" ]; then
             VERSION=${{ needs.prepare_versions.outputs.ReleaseVersion }}
           fi
-          dotnet build --configuration Release --no-restore /p:Version=$VERSION
+          dotnet build --configuration Release /p:Version=$VERSION
       - name: Test
         run: dotnet test --configuration Release --no-build
       - name: Upload Artifacts
