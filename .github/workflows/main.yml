@@ -92,5 +92,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_id: ${{ steps.find.outputs.tag }}
+          release_id: ${{ needs.prepare_versions.outputs.ReleaseVersion }}
           path: nupkgs
