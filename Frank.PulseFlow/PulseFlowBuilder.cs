@@ -2,8 +2,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.PulseFlow;
 
-public class PulseFlowBuilder(IServiceCollection services) : IPulseFlowBuilder
+public class PulseFlowBuilder : IPulseFlowBuilder
 {
+    private readonly IServiceCollection _services;
+
+    public PulseFlowBuilder(IServiceCollection services)
+    {
+        _services = services;
+    }
+
     /// <summary>
     /// Adds a flow of type T to the pulse flow builder.
     /// </summary>
@@ -11,7 +18,7 @@ public class PulseFlowBuilder(IServiceCollection services) : IPulseFlowBuilder
     /// <returns>The pulse flow builder instance.</returns>
     public IPulseFlowBuilder AddFlow<T>() where T : class, IPulseFlow
     {
-        services.AddTransient<IPulseFlow, T>();
+        _services.AddTransient<IPulseFlow, T>();
         return this;
     }
 }

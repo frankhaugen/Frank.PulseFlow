@@ -2,12 +2,21 @@
 
 namespace Frank.PulseFlow.Internal;
 
-internal class PulseNexus(IChannel channel, IEnumerable<IPulseFlow> pulseFlows) : BackgroundService
+internal class PulseNexus : BackgroundService
 {
+    private readonly IChannel _channel;
+    private readonly IEnumerable<IPulseFlow> _pulseFlows;
+
+    public PulseNexus(IChannel channel, IEnumerable<IPulseFlow> pulseFlows)
+    {
+        _channel = channel;
+        _pulseFlows = pulseFlows;
+    }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await foreach (IPulse pulse in channel.ReadAllAsync(stoppingToken))
-            await Task.WhenAll(pulseFlows
+        await foreach (IPulse pulse in _channel.ReadAllAsync(stoppingToken))
+            await Task.WhenAll(_pulseFlows
                 .Where(x => x.CanHandle(pulse.GetType()))
                 .Select(flow => flow.HandleAsync(pulse, stoppingToken)));
     }
