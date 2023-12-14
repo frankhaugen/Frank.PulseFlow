@@ -9,67 +9,88 @@ on:
     types: [published]
 
 jobs:
+  prepare_versions:
+    runs-on: ubuntu-latest
+    outputs:
+      ReleaseVersion: ${{ steps.find.outputs.tag }}
+      PreviewAssemblyVersion: ${{ steps.set_version.outputs.preview_assembly_version }}
+      PreviewPackageVersion: ${{ steps.set_version.outputs.preview_package_version }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Find Latest Tag
+        id: find
+        uses: oprypin/find-latest-tag@v1.0.4
+        with:
+          repository: ${{ github.repository }}
+          releases-only: true
+      - name: Set version output
+        id: set_version
+        run: |
+          echo "::set-output name=preview_assembly_version::${{ steps.find.outputs.tag }}.${{ github.run_number }}"
+          echo "::set-output name=preview_package_version::${{ steps.find.outputs.tag }}.${{ github.run_number }}-preview"
+
   build_and_test:
+    needs: prepare_versions
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '8.0.x'
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build
+      - uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore /p:Version=${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }}
+      - name: Test
+        run: dotnet test --no-build
 
   build_pack_publish_preview:
+    needs: prepare_versions
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '8.0.x'
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build
-    - name: Pack
-      run: dotnet pack --no-build --output nupkgs /p:VersionSuffix=preview
-    - name: Publish NuGet
-      run: dotnet nuget push "nupkgs/*.nupkg" -k ${{ secrets.NugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      - uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore /p:Version=${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }}
+      - name: Test
+        run: dotnet test --no-build
+      - name: Pack
+        run: dotnet pack --no-build --output nupkgs /p:Version=${{ needs.prepare_versions.outputs.PreviewPackageVersion }}
+      - name: Publish NuGet
+        run: dotnet nuget push "nupkgs/*.nupkg" -k ${{ secrets.NugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
   build_pack_publish_release:
+    needs: prepare_versions
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '8.0.x'
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build
-    - name: Pack
-      run: dotnet pack --no-build --output nupkgs
-    - name: Publish NuGet
-      run: dotnet nuget push "nupkgs/*.nupkg" -k ${{ secrets.NugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
-    - name: Upload NuGet package to GitHub Release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./nupkgs/YourPackageName.nupkg
-        asset_name: YourPackageName.nupkg
-        asset_content_type: application/zip
+      - uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build (${{ needs.prepare_versions.outputs.ReleaseVersion }})
+        run: dotnet build --configuration Release --no-restore /p:Version=${{ needs.prepare_versions.outputs.ReleaseVersion }}
+      - name: Test
+        run: dotnet test --no-build
+      - name: Pack
+        run: dotnet pack --no-build --output nupkgs /p:Version=${{ needs.prepare_versions.outputs.ReleaseVersion }}
+      - name: Publish NuGet
+        run: dotnet nuget push "nupkgs/*.nupkg" -k ${{ secrets.NugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Upload Release Assets
+        uses: dwenegar/upload-release-assets@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.find.outputs.tag }}
+          path: nupkgs
