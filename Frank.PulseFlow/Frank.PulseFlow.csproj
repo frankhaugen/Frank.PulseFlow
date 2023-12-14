@@ -33,14 +33,9 @@
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'"/>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" Condition="'$(TargetFramework)' == 'net8.0'"/>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" Condition="'$(TargetFramework)' == 'net7.0'"/>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="7.0.0" PrivateAssets="All" Condition="'$(TargetFramework)' == 'net7.0'"/>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="7.0.0" PrivateAssets="All"/>
     </ItemGroup>
 
     <ItemGroup>
