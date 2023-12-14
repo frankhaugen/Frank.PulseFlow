@@ -1,7 +1,5 @@
 name: .NET CI/CD Workflow
 
-env:
-  dotnet_version: '7.0.x'
 
 on:
   pull_request:
@@ -11,6 +9,9 @@ on:
   release:
     types: [published]
 
+env:
+  DOTNET_VERSION: 7.0.x
+  
 jobs:
   prepare_versions:
     runs-on: ubuntu-latest
@@ -40,7 +41,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ dotnet_version }}
+          dotnet-version: $DOTNET_VERSION
       - name: Build (Conditional Versioning)
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ] || [ "${{ github.event_name }}" = "push" ]; then
@@ -68,7 +69,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ dotnet_version }}
+          dotnet-version: $DOTNET_VERSION
       - name: Download Artifacts
         uses: actions/download-artifact@v2
         with:
@@ -87,7 +88,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ dotnet_version }}
+          dotnet-version: $DOTNET_VERSION
       - name: Download Artifacts
         uses: actions/download-artifact@v2
         with:
