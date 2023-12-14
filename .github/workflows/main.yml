@@ -59,7 +59,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build --no-restore /p:Version=${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }}
+        run: dotnet build --configuration Release --no-restore /p:Version=${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }}
       - name: Test
         run: dotnet test --no-build
       - name: Pack
