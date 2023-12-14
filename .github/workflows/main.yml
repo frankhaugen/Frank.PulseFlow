@@ -10,6 +10,7 @@ on:
   
 jobs:
   prepare_versions:
+    name: Create Version Strings
     runs-on: ubuntu-latest
     outputs:
       ReleaseVersion: ${{ steps.find.outputs.tag }}
@@ -30,6 +31,7 @@ jobs:
           echo "::set-output name=preview_package_version::${{ steps.find.outputs.tag }}.${{ github.run_number }}-preview"
           
   build_test:
+    name: PR Build and Test
     needs: prepare_versions
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -45,6 +47,7 @@ jobs:
         run: dotnet test --configuration Release --no-build
 
   build_pack_publish_preview:
+    name: Merge Build, Test, Pack and Push Nuget (${{ needs.prepare_versions.outputs.PreviewPackageVersion }}
     needs: prepare_versions
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -64,6 +67,7 @@ jobs:
         run: dotnet nuget push "nupkgs/*.nupkg" -k ${{ secrets.NugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
   build_pack_publish_release:
+    name: Release Build, Test, Pack and Push Nuget (${{ needs.prepare_versions.outputs.ReleaseVersion }}
     needs: prepare_versions
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
