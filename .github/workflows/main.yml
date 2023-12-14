@@ -1,6 +1,5 @@
 name: .NET CI/CD Workflow
 
-
 on:
   pull_request:
     branches: [main]
@@ -30,35 +29,8 @@ jobs:
           echo "::set-output name=preview_assembly_version::${{ steps.find.outputs.tag }}.${{ github.run_number }}"
           echo "::set-output name=preview_package_version::${{ steps.find.outputs.tag }}.${{ github.run_number }}-preview"
 
-  build_and_test:
-    needs: prepare_versions
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 7.0.x
-      - name: Build (Conditional Versioning)
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ] || [ "${{ github.event_name }}" = "push" ]; then
-            VERSION=${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }}
-          elif [ "${{ github.event_name }}" = "release" ]; then
-            VERSION=${{ needs.prepare_versions.outputs.ReleaseVersion }}
-          fi
-          dotnet build --configuration Release /p:Version=$VERSION
-      - name: Test
-        run: dotnet test --configuration Release --no-build
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: built-artifacts
-          path: |
-            **/bin/
-            **/obj/
-
   build_pack_publish_preview:
-    needs: [prepare_versions, build_and_test]
+    needs: prepare_versions
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
@@ -67,17 +39,17 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 7.0.x
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: built-artifacts
+      - name: Build (${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }})
+        run: dotnet build --configuration Release /p:Version=${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }}
+      - name: Test
+        run: dotnet test --configuration Release --no-build
       - name: Pack
         run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ needs.prepare_versions.outputs.PreviewPackageVersion }}
       - name: Publish NuGet
         run: dotnet nuget push "nupkgs/*.nupkg" -k ${{ secrets.NugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
   build_pack_publish_release:
-    needs: [prepare_versions, build_and_test]
+    needs: prepare_versions
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
@@ -86,10 +58,10 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 7.0.x
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: built-artifacts
+      - name: Build (${{ needs.prepare_versions.outputs.ReleaseVersion }})
+        run: dotnet build --configuration Release /p:Version=${{ needs.prepare_versions.outputs.ReleaseVersion }}
+      - name: Test
+        run: dotnet test --configuration Release --no-build
       - name: Pack
         run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ needs.prepare_versions.outputs.ReleaseVersion }}
       - name: Publish NuGet
@@ -100,4 +72,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ needs.prepare_versions.outputs.ReleaseVersion }}
-          path: nupkgs
+          assets_path: nupkgs
