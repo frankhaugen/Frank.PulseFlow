@@ -32,12 +32,15 @@ jobs:
   build_and_test:
     needs: prepare_versions
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ['7.0.x', '8.0.x']
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: ${{ matrix.dotnet-version }}
       - name: Restore dependencies
         run: dotnet restore
       - name: Build (Conditional Versioning)
@@ -62,12 +65,15 @@ jobs:
     needs: [prepare_versions, build_and_test]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ['7.0.x', '8.0.x']
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: ${{ matrix.dotnet-version }}
       - name: Download Artifacts
         uses: actions/download-artifact@v2
         with:
@@ -81,12 +87,15 @@ jobs:
     needs: [prepare_versions, build_and_test]
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ['7.0.x', '8.0.x']
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: ${{ matrix.dotnet-version }}
       - name: Download Artifacts
         uses: actions/download-artifact@v2
         with:
