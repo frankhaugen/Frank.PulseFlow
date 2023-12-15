@@ -5,9 +5,9 @@ namespace Frank.PulseFlow.Internal;
 internal class PulseNexus : BackgroundService
 {
     private readonly IChannel _channel;
-    private readonly IEnumerable<IPulseFlow> _pulseFlows;
+    private readonly IEnumerable<IFlow> _pulseFlows;
 
-    public PulseNexus(IChannel channel, IEnumerable<IPulseFlow> pulseFlows)
+    public PulseNexus(IChannel channel, IEnumerable<IFlow> pulseFlows)
     {
         _channel = channel;
         _pulseFlows = pulseFlows;

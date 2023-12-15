@@ -1,9 +1,9 @@
 namespace Frank.PulseFlow;
 
 /// <summary>
-/// Represents a component that handles pulse flows.
+/// A flow is something that handles a pulse
 /// </summary>
-public interface IPulseFlow
+public interface IFlow
 {
     /// <summary>
     /// Handles the pulse asynchronously.
