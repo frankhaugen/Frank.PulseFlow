@@ -1,6 +1,6 @@
 namespace Frank.PulseFlow.Tests.Cli;
 
-public class TextPulseFlow : IPulseFlow
+public class TextPulseFlow : IFlow
 {
     private readonly ILogger<TextPulseFlow> _logger;
 

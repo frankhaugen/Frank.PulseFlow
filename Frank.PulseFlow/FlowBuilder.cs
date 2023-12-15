@@ -2,11 +2,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.PulseFlow;
 
-public class PulseFlowBuilder : IPulseFlowBuilder
+public class FlowBuilder : IFlowBuilder
 {
     private readonly IServiceCollection _services;
 
-    public PulseFlowBuilder(IServiceCollection services)
+    public FlowBuilder(IServiceCollection services)
     {
         _services = services;
     }
@@ -16,9 +16,9 @@ public class PulseFlowBuilder : IPulseFlowBuilder
     /// </summary>
     /// <typeparam name="T">The type of the flow to be added.</typeparam>
     /// <returns>The pulse flow builder instance.</returns>
-    public IPulseFlowBuilder AddFlow<T>() where T : class, IPulseFlow
+    public IFlowBuilder AddFlow<T>() where T : class, IFlow
     {
-        _services.AddTransient<IPulseFlow, T>();
+        _services.AddTransient<IFlow, T>();
         return this;
     }
 }
