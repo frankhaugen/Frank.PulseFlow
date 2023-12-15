@@ -85,10 +85,3 @@ jobs:
         run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ needs.prepare_versions.outputs.ReleaseVersion }}
       - name: Publish NuGet
         run: dotnet nuget push "nupkgs/*.nupkg" -k ${{ secrets.NugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Upload Release Assets
-        uses: dwenegar/upload-release-assets@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_id: ${{ needs.prepare_versions.outputs.ReleaseVersion }}
-          assets_path: nupkgs
