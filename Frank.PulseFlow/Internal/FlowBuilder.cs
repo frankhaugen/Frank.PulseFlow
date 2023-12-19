@@ -1,15 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank.PulseFlow;
+namespace Frank.PulseFlow.Internal;
 
-public class FlowBuilder : IFlowBuilder
+internal class FlowBuilder : IFlowBuilder
 {
     private readonly IServiceCollection _services;
 
-    public FlowBuilder(IServiceCollection services)
-    {
-        _services = services;
-    }
+    public FlowBuilder(IServiceCollection services) => _services = services;
 
     /// <summary>
     /// Adds a flow of type T to the pulse flow builder.
