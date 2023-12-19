@@ -4,10 +4,7 @@ public class TestingService : BackgroundService
 {
     private readonly IConduit _messenger;
 
-    public TestingService(IConduit messenger)
-    {
-        _messenger = messenger;
-    }
+    public TestingService(IConduit messenger) => _messenger = messenger;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

@@ -1,13 +1,10 @@
 namespace Frank.PulseFlow.Tests.Cli;
 
-public class TextPulseFlow : IFlow
+public class TextFlow : IFlow
 {
-    private readonly ILogger<TextPulseFlow> _logger;
+    private readonly ILogger<TextFlow> _logger;
 
-    public TextPulseFlow(ILogger<TextPulseFlow> logger)
-    {
-        _logger = logger;
-    }
+    public TextFlow(ILogger<TextFlow> logger) => _logger = logger;
 
     public async Task HandleAsync(IPulse message, CancellationToken cancellationToken)
     {

@@ -1,5 +1,8 @@
 namespace Frank.PulseFlow;
 
+/// <summary>
+/// Represents a pulse flow builder that is used to simplify the registration of flows.
+/// </summary>
 public interface IFlowBuilder
 {
     /// <summary>
