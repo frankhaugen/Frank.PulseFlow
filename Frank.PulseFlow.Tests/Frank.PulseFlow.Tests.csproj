@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <IsTestProject>true</IsTestProject>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Frank.PulseFlow.Logging\Frank.PulseFlow.Logging.csproj" />
       <ProjectReference Include="..\Frank.PulseFlow\Frank.PulseFlow.csproj" />
     </ItemGroup>
 

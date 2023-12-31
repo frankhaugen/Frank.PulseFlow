@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
     <PropertyGroup>
+        <IsTestProject>true</IsTestProject>
+        <IsPackable>false</IsPackable>
         <UserSecretsId>dotnet-Frank.PulseFlow.Tests.Cli-6411a286-dfbb-4d8c-b48a-184038a5a93c</UserSecretsId>
     </PropertyGroup>
 

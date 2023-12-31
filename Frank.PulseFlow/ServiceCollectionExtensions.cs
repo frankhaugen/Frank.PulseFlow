@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
         services.AddHostedService<PulseNexus>();
         services.AddSingleton<IConduit, Conduit>();
         services.AddSingleton<IChannel, Channel>();
-
+        
         return services;
     }
 }
