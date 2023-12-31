@@ -39,9 +39,5 @@ public class PulseFlowLogger : ILogger
         return logLevel >= filterOptions.MinLevel;
     }
 
-    public IDisposable? BeginScope<TState>(TState state) where TState : notnull
-    {
-        // no scope support
-        return null;
-    }
+    public IDisposable? BeginScope<TState>(TState state) where TState : notnull => new PulseFlowLoggerScope<TState>(state);
 }

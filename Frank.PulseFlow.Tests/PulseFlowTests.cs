@@ -52,7 +52,6 @@ public class PulseFlowTests
                 services.AddPulseFlow(builder =>
                 {
                     builder.AddFlow<TestOutputFlow>();
-                    // builder.AddFlow<Flow2>();
                 });
                 
                 services.AddHostedService<MyService>();

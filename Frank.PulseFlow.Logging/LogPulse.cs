@@ -2,20 +2,12 @@
 
 namespace Frank.PulseFlow.Logging;
 
-public abstract class LogPulse : BasePulse
+public class LogPulse<TState> : BasePulse
 {
-    public abstract LogLevel LogLevel { get; }
-    public abstract EventId EventId { get; }
-    public abstract Exception? Exception { get; }
-    public abstract string CategoryName { get; }
-}
-public class LogPulse<TState> : LogPulse
-{
-    public override LogLevel LogLevel { get; }
-    public override EventId EventId { get; }
-    public override Exception? Exception { get; }
-    public override string CategoryName { get; }
-
+    public LogLevel LogLevel { get; }
+    public EventId EventId { get; }
+    public Exception? Exception { get; }
+    public string CategoryName { get; }
     public TState State { get; }
     public Func<TState, Exception?, string> Formatter { get; }
 
