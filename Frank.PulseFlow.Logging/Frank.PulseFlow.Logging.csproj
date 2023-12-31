@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>true</IsPackable>
+        <OutputType>Library</OutputType>
+        <Description>This is a ILogger{T} compatible "sink" for logs that can be "hooked into", to allow to listen to logging however you wish. PulseFlow uses Channel -mechanism for internal messaging</Description>
+        <PackageTags>Pulse,Flow,PulseFlow,Frank,Frank Haugen,Messaging,In-Memory, logging, ilogger, iloggerfactory, iloggerprovider</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Frank.PulseFlow\Frank.PulseFlow.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+    </ItemGroup>
+
+</Project>

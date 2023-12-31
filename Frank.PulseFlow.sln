@@ -7,28 +7,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frank.PulseFlow", "Frank.Pu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frank.PulseFlow.Tests", "Frank.PulseFlow.Tests\Frank.PulseFlow.Tests.csproj", "{CDFBB79A-4D36-4C6C-865A-EC6A48EEA08E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frank.PulseFlow.Tests.Benchmarks", "Frank.PulseFlow.Tests.Benchmarks\Frank.PulseFlow.Tests.Benchmarks.csproj", "{31BB9094-E736-45DC-9310-386921878506}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frank.PulseFlow.Tests.Cli", "Frank.PulseFlow.Tests.Cli\Frank.PulseFlow.Tests.Cli.csproj", "{A2981338-9563-49BD-BE39-EDFD759C39D7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F0BA9824-F862-4CCF-A326-7E5AB567F9E4}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		build.ps1 = build.ps1
 		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
-		publish.ps1 = publish.ps1
-		restore.ps1 = restore.ps1
-		test.ps1 = test.ps1
-		pack.ps1 = pack.ps1
 		CONTRIBUTING.md = CONTRIBUTING.md
 		icon.png = icon.png
 		README.md = README.md
-		.github\workflows\main.yml = .github\workflows\main.yml
 		MAINTAINERS.md = MAINTAINERS.md
 		STYLE.md = STYLE.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frank.PulseFlow.Logging", "Frank.PulseFlow.Logging\Frank.PulseFlow.Logging.csproj", "{37DF9EE8-CDF2-430C-B407-D9546088D890}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,13 +39,9 @@ Global
 		{CDFBB79A-4D36-4C6C-865A-EC6A48EEA08E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDFBB79A-4D36-4C6C-865A-EC6A48EEA08E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDFBB79A-4D36-4C6C-865A-EC6A48EEA08E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{31BB9094-E736-45DC-9310-386921878506}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{31BB9094-E736-45DC-9310-386921878506}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{31BB9094-E736-45DC-9310-386921878506}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{31BB9094-E736-45DC-9310-386921878506}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A2981338-9563-49BD-BE39-EDFD759C39D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2981338-9563-49BD-BE39-EDFD759C39D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2981338-9563-49BD-BE39-EDFD759C39D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A2981338-9563-49BD-BE39-EDFD759C39D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37DF9EE8-CDF2-430C-B407-D9546088D890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37DF9EE8-CDF2-430C-B407-D9546088D890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37DF9EE8-CDF2-430C-B407-D9546088D890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37DF9EE8-CDF2-430C-B407-D9546088D890}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
