@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using Xunit.Abstractions;
+using Frank.Reflection;
 
 namespace Frank.PulseFlow.Tests;
 
@@ -33,7 +34,15 @@ public class PulseFlowTests
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Hello from MyService");
+            _logger.LogInformation("Hello from {ServiceName}", nameof(MyService));
+            try
+            {
+                throw new Exception("This is an exception");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "This is an exception in {ServiceName}", nameof(MyService));
+            }
             await Task.Delay(1000, stoppingToken);
         }
     }
@@ -69,10 +78,16 @@ public class PulseFlowTests
 
         public async Task HandleAsync(IPulse pulse, CancellationToken cancellationToken)
         {
-            var message = pulse.ToString();
+            var thing = pulse as LogPulse;
+            var message = thing!.ToString();
             _outputHelper.WriteLine(message);
+            await Task.CompletedTask;
         }
 
-        public bool CanHandle(Type pulseType) => true;
+        public bool CanHandle(Type pulseType)
+        {
+            _outputHelper.WriteLine($"CanHandle: {pulseType.GetFriendlyName()}");
+            return pulseType.BaseType == typeof(LogPulse);
+        }
     }
 }

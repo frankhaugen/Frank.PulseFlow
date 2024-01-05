@@ -1,5 +1,8 @@
 namespace Frank.PulseFlow;
 
+/// <summary>
+/// Represents a base pulse.
+/// </summary>
 public abstract class BasePulse : IPulse
 {
     /// <summary>
