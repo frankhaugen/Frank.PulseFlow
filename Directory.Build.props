@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>true</IsPackable>
@@ -14,7 +14,7 @@
 
         <Authors>Frank R. Haugen</Authors>
         <PublisherName>Frank R. Haugen</PublisherName>
-        <Copyright>Copyright (c) 2023 Frank R. Haugen</Copyright>
+        <Copyright>Copyright (c) 2024 Frank R. Haugen</Copyright>
 
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageIcon>icon.png</PackageIcon>
@@ -29,7 +29,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="7.0.0" PrivateAssets="All"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
         <None Include="../README.md" Pack="true" PackagePath="\"/>
         <None Include="../icon.png" Pack="true" PackagePath="\"/>
         <InternalsVisibleTo Include="$(AssemblyName).Tests"/>
