@@ -5,7 +5,7 @@ namespace Frank.PulseFlow.Logging;
 /// <summary>
 /// Represents a log pulse.
 /// </summary>
-public class LogPulse : BasePulse
+public sealed class LogPulse : BasePulse
 {
     /// <summary>
     /// Gets the log level of the application.
@@ -55,13 +55,15 @@ public class LogPulse : BasePulse
     /// <param name="exception">The exception associated with the log event, if any.</param>
     /// <param name="categoryName">The name of the log category.</param>
     /// <param name="message">The log message.</param>
-    public LogPulse(LogLevel logLevel, EventId eventId, Exception? exception, string categoryName, string message)
+    /// <param name="state"></param>
+    public LogPulse(LogLevel logLevel, EventId eventId, Exception? exception, string categoryName, string message, IReadOnlyList<KeyValuePair<string, object?>>? state)
     {
         LogLevel = logLevel;
         EventId = eventId;
         Exception = exception;
         CategoryName = categoryName;
         Message = message;
+        State = state;
     }
 
     /// <summary>
