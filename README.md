@@ -22,6 +22,9 @@ ___
   - [Key Features](#key-features)
   - [Illustration](#illustration)
   - [Use Cases](#use-cases)
+    - [Example 1 - Web API](#example-1---web-api)
+    - [Example 2 - Priority Queue](#example-2---priority-queue)
+    - [Example 3 - Complex Data Categorization](#example-3---complex-data-categorization)
 - [Getting Started](#getting-started)
   - [Installation](#installation)
 - [Concepts](#concepts)
@@ -98,9 +101,10 @@ When you include this in a GitHub Markdown file, GitHub will render the Mermaid 
 PulseFlow is a general-purpose messaging system that can be used in a wide variety of applications. It's particularly
 useful in scenarios where there's a need for asynchronous communication between different parts of the system.
 
-Another use case is when you need multiple threads to do some non-multiple-thread-safe work, like saving to a log-file. Example: You have a web API and you want to save a all requests' route, method and user to a log-file. You can use PulseFlow to do this in a thread-safe manner, because PulseFlow's `IConduit` and `IChannel` are thread-safe. You can have multiple threads saving to the same log-file, and PulseFlow will ensure that the log-file is not written to by multiple threads at the same time, and that the writing happens in the order the messages are received.
 
-#### Example
+#### Example 1 - Web API
+
+A use case is when you need multiple threads to do some non-multiple-thread-safe work, like saving to a log-file. Example: You have a web API and you want to save a all requests' route, method and user to a log-file. You can use PulseFlow to do this in a thread-safe manner, because PulseFlow's `IConduit` and `IChannel` are thread-safe. You can have multiple threads saving to the same log-file, and PulseFlow will ensure that the log-file is not written to by multiple threads at the same time, and that the writing happens in the order the messages are received.
 
 ```mermaid
 graph TB
@@ -118,6 +122,72 @@ graph TB
     subgraph Consumption and Routing
         IChannel -->|consumed and routed by| Nexus[Nexus]
         Nexus -->|typeof==API| Flow[FileLoggerFlow : IFlow]
+    end
+```
+
+#### Example 2 - Priority Queue
+
+Another use case is when you need to prioritize messages. You might have some user-input that needs to be processed, and you want to prioritize some messages over others. You can use PulseFlow to do this,whithout having to worry about thread-safety. You can have multiple threads processing the messages, and PulseFlow will ensure that the messages are processed in the order they are received. And so if you have a different type for each priority, you can have multiple threads processing each priority, 
+and so when you have 10-15 "normal" messages, your single "premium" message will get processed at in its own thread.
+
+```mermaid
+graph LR
+    PrioritizedWork[StandardMessage : IPulse] --> Conduit[IConduit]
+    PrioritizedWork[StandardMessage : IPulse] -->|standard| Conduit[IConduit]
+    PrioritizedWork[StandardMessage : IPulse] --> Conduit[IConduit]
+    PrioritizedWork[PremiumMessage : IPulse] -->|premium| Conduit[IConduit]
+    Conduit -->|delivered to| IChannel[IChannel]
+    IChannel --> Nexus[Nexus]
+    
+    subgraph parallel processing
+        Nexus --> StandardFlow[StandardFlow : IFlow]
+        Nexus -->|typeof==StandardMessage| StandardFlow[StandardFlow : IFlow]
+        Nexus --> StandardFlow[StandardFlow : IFlow]
+        Nexus -->|typeof==PremiumMessage| PremiumFlow[PremiumFlow : IFlow]
+    end      
+    
+    StandardFlow --> SomeResource[SomeResource]
+    PremiumFlow --> SomeResource[SomeResource]
+```
+
+#### Example 3 - Complex Data Categorization
+
+If you have layered data, and you want to categorize the data based on some of the layers, you can use PulseFlow to do this. Suppesed you have a data ingest system and all you get is a byte-array, and what you want is to parse the bytes to data that could represent an invoice. This can be done in "classical" logic structures, but this can mean large if/else or switch statements, and this can be hard to maintain or change. With PulseFlow you can get a more modular structure, where each step is a separate 
+class, and you can easily add new steps, or change the order of the steps, or even add parallel steps. And you can do this without having to worry about thread-safety unless you want to through access to some shared resource instead of using the `IFlow`s to pass data between the steps, e.g. if you write to a log-file from different steps. (This is not recommended, but it is possible. Correct way is to use `IFlow`s to pass data between steps, and then have a separate `IFlow` that writes to the log-file.)
+
+```mermaid
+graph TB
+    File[Bytes : IPulse] --> |PulseFlow| X1[IdentifierFlow]
+    X1 -.->|.xml| XmlFlow[XmlFlow]
+    X1 -.->|.json| JsonFlow[JsonFlow]
+    X1 -.->|.csv| CsvFlow[CsvFlow]
+
+    XmlFlow -->|PulseFlow| XDocumentFlow
+    XDocumentFlow -->|PulseFlow| XDocumentIdentifer
+    XDocumentIdentifer -->|PEPPOL-PulseFlow| PeppolFlow -->|UBL-PulseFlow| UblFlow
+    XDocumentIdentifer -->|UBL-PulseFlow| UblFlow
+    
+    UblFlow -->|PulseFlow| UblIdentifer
+    UblIdentifer -->|PulseFlow| UblInvoiceFlow -->|PulseFlow| InvoiceFlow
+    UblIdentifer -->|PulseFlow| UblCreditNoteFlow
+    UblIdentifer -->|PulseFlow| UblDebitNoteFlow -->|PulseFlow| InvoiceFlow
+    UblIdentifer -->|PulseFlow| UblReminderFlow -->|PulseFlow| InvoiceFlow
+    
+    JsonFlow -->|PulseFlow| JsonIdentifer
+    JsonIdentifer -->|PulseFlow| JsonInvoiceFlow
+    JsonInvoiceFlow -->|PulseFlow| InvoiceFlow
+    InvoiceFlow -->|PulseFlow| InvoicePaymentFlow
+    
+    subgraph Pulse_Flow
+        subgraph Sender
+            PulseA -.->|Send| IConduit[IConduit]
+            PulseB -.->|Send| IConduit[IConduit]
+            PulseC -.->|Send| IConduit[IConduit]
+        end
+        IConduit --> IChannel[IChannel]
+        IChannel --> Nexus[Nexus]
+        Nexus --> FlowX[IFlow]
+        Nexus --> FlowY[IFlow]
     end
 ```
 
@@ -144,43 +214,41 @@ using Frank.PulseFlow;
 The following code snippet shows a basic example of how to use PulseFlow:
 
 ```csharp
-IHostBuilder builder = Host.CreateDefaultBuilder();
-
-builder.ConfigureServices((context, services) =>
+public class Program
 {
-    services.AddPulseFlow(messagingBuilder =>
+    public static async Task Main(string[] args)
     {
-        messagingBuilder.AddFlow<TextPulseFlow>();
-    });
-    services.AddHostedService<TestingService>();
-});
-
-IHost app = builder.Build();
-
-await app.RunAsync();
+        IHostBuilder builder = Host.CreateDefaultBuilder();
+        builder.ConfigureServices((context, services) =>
+        {
+            services.AddPulseFlow(messagingBuilder =>
+            {
+                messagingBuilder.AddFlow<TextPulseFlow>();
+            });
+            services.AddHostedService<TestingService>();
+        });
+        IHost app = builder.Build();
+        await app.RunAsync();
+    }
+}
 
 public class TextFlow : IFlow
 {
     private readonly ILogger<TextFlow> _logger;
-
     public TextFlow(ILogger<TextFlow> logger) => _logger = logger;
-
     public async Task HandleAsync(IPulse message, CancellationToken cancellationToken)
     {
         if (message is TextPulse textMessage)
             _logger.LogInformation("Received text message: {Text}", textMessage.Text);
         await Task.CompletedTask;
     }
-
     public bool CanHandle(Type pulseType) => pulseType == typeof(TextPulse);
 }
 
 public class TestingService : BackgroundService
 {
     private readonly IConduit _messenger;
-
     public TestingService(IConduit messenger) => _messenger = messenger;
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Delay(2000, stoppingToken);
@@ -191,6 +259,7 @@ public class TestingService : BackgroundService
         }
     }
 }
+
 public class TextPulse : BasePulse
 {
     public string Text { get; set; }
