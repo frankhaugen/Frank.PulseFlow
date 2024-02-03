@@ -35,7 +35,7 @@ public class PulseFlowLogger : ILogger
     /// <param name="exception">The exception associated with the log entry.</param>
     /// <param name="formatter">A function that formats the log message.</param>
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) 
-        => _conduit.SendAsync(new LogPulse(logLevel, eventId, exception, _categoryName, formatter.Invoke(state, exception), state as IReadOnlyList<KeyValuePair<string, object?>>)).GetAwaiter().GetResult();
+        => _conduit.SendAsync(new LogPulse(logLevel, eventId, exception, _categoryName, formatter.Invoke(state, exception), (IReadOnlyList<KeyValuePair<string, object?>>)state!), CancellationToken.None).GetAwaiter().GetResult();
 
     /// <summary>
     /// Checks if logging is enabled for the specified log level.

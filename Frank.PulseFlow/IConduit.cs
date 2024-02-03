@@ -9,6 +9,6 @@ public interface IConduit
     /// Sends a pulse to the underlying infrastructure.
     /// </summary>
     /// <param name="message"></param>
-    /// <returns></returns>
-    Task SendAsync(IPulse message);
+    /// <param name="cancellationToken"></param>
+    Task SendAsync(IPulse message, CancellationToken cancellationToken);
 }

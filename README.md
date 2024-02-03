@@ -1,4 +1,4 @@
-# PulseFlow (Local Messaging)
+# PulseFlow (Local Messaging With Channels)
 
 PulseFlow Local Messaging is a lightweight, high-performance messaging system that enables seamless communication, and thread-safe data transfer between different parts of an application. It's designed to be simple, flexible, and scalable, allowing for easy integration into any system architecture.
 
@@ -46,6 +46,15 @@ PulseFlow Local Messaging is a lightweight, high-performance messaging system th
 between different parts of an application. It's designed to be simple, flexible, and scalable, allowing for easy
 integration into any system architecture.
 
+This library does have a dependency on `Frank.Channels.DependencyInjection`, which is a simple registration of `System.
+Threading.Channels.Channel<T>` in the Dependency Injection container. This is done to make it easier to use `System.
+Threading.Channels` in a Dependency Injection scenario, and to make it easier to use `System.Threading.Channels` in a 
+thread-safe manner. This includes a `ChannelWriter<T>` and a `ChannelReader<T>` that are a thread-safe singlteton, and can 
+be called directly from the Dependency Injection container without having to call `Channel<T>`, and then `Channel<T>.Writer` or 
+`Channel<T>.Reader` directly. This is done to make it easier to use `System.Threading.Channels` in a Dependency Injection 
+behind the scenes in PulseFlow. This will also make it possible to "intercept" the `ChannelWriter<T>` and `ChannelReader<T>` 
+for debugging, logging, or other purposes.
+
 ### Key Features
 
 - **Lightweight**: PulseFlow is a lightweight messaging system, with a small footprint and minimal resource
@@ -74,10 +83,10 @@ graph TB
         ApiPulse[API : IPulse] -->|transmitted via| Conduit[IConduit]
     end
     subgraph "Delivery"
-        Conduit -->|delivered to| IChannel[IChannel]
+        Conduit -->|delivered to| Channel[Channel<IPulse<T>>]
     end
     subgraph "Consumption and Routing"
-        IChannel -->|consumed and routed by| Nexus[Nexus]
+        Channel -->|consumed and routed by| Nexus[Nexus]
         Nexus -->|typeof==Email| EmailFlow[EmailFlow : IFlow]
         Nexus -->|typeof==API| Flow[FtpAndApiFlow : IFlow]
         Nexus -->|typeof==FTP| Flow[FtpAndApiFlow : IFlow]
@@ -89,8 +98,7 @@ graph TB
 In this Mermaid diagram:
 - **IPulse** is the interface for the Pulse.
 - **IConduit** is the interface for the Conduit, which is the pathway through which messages are transmitted.
-- **IChannel** is the interface for the Channel, which is a wrapper around the `System.Threading.Channels.Channel<T>` class, which is a thread-safe data structure for passing data between producers and consumers located in different threads.
-- **Nexus** is the central processing service, which handles the pulse messages.
+- **Nexus** is the central processing service, which handles the pulse messages and routes them to their respective destinations.
 - **IFlow** is the interface for the a flow, which is the mechanism that handles/consumes the pulse messages.
 - **ILogger** is the interface for the generic logger in dotnet.
 
@@ -117,7 +125,7 @@ graph TB
         ApiPulse6[ApiMessage : IPulse] -->|transmitted via| Conduit[IConduit]
     end
     subgraph Delivery
-        Conduit -->|delivered to| IChannel[IChannel]
+        Conduit -->|delivered to| IChannel[Channel]
     end
     subgraph Consumption and Routing
         IChannel -->|consumed and routed by| Nexus[Nexus]
@@ -136,7 +144,7 @@ graph LR
     PrioritizedWork[StandardMessage : IPulse] -->|standard| Conduit[IConduit]
     PrioritizedWork[StandardMessage : IPulse] --> Conduit[IConduit]
     PrioritizedWork[PremiumMessage : IPulse] -->|premium| Conduit[IConduit]
-    Conduit -->|delivered to| IChannel[IChannel]
+    Conduit -->|delivered to| IChannel[Channel]
     IChannel --> Nexus[Nexus]
     
     subgraph parallel processing
@@ -184,7 +192,7 @@ graph TB
             PulseB -.->|Send| IConduit[IConduit]
             PulseC -.->|Send| IConduit[IConduit]
         end
-        IConduit --> IChannel[IChannel]
+        IConduit --> IChannel[Channel]
         IChannel --> Nexus[Nexus]
         Nexus --> FlowX[IFlow]
         Nexus --> FlowY[IFlow]
