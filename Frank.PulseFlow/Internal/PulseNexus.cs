@@ -1,9 +1,14 @@
 using System.Diagnostics;
 using System.Linq;
 
+using Microsoft.Extensions.Options;
+
 namespace Frank.PulseFlow.Internal;
 
-internal class PulseNexus(ChannelReader<IPulse> reader, IEnumerable<IFlow> pulseFlows) : BackgroundService
+internal class PulseNexus(
+    ChannelReader<IPulse> reader,
+    IEnumerable<IFlow> pulseFlows,
+    IOptions<PulseFlowDiagnosticsOptions> diagnosticsOptions) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -11,13 +16,32 @@ internal class PulseNexus(ChannelReader<IPulse> reader, IEnumerable<IFlow> pulse
         {
             var flows = pulseFlows.Where(x => x.CanHandle(pulse.GetType())).ToArray();
             if (flows.Length == 0)
+            {
+                NotifyUnmatched(pulse);
                 continue;
+            }
 
             await Task.WhenAll(flows.Select(flow => InvokeFlowAsync(flow, pulse, stoppingToken)));
         }
     }
 
-    private static async Task InvokeFlowAsync(IFlow flow, IPulse pulse, CancellationToken stoppingToken)
+    private void NotifyUnmatched(IPulse pulse)
+    {
+        var callback = diagnosticsOptions.Value.UnmatchedPulse;
+        if (callback is null)
+            return;
+
+        try
+        {
+            callback(new PulseUnmatchedContext(pulse));
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("[Frank.PulseFlow] PulseFlowDiagnosticsOptions.UnmatchedPulse callback threw: {0}", ex);
+        }
+    }
+
+    private async Task InvokeFlowAsync(IFlow flow, IPulse pulse, CancellationToken stoppingToken)
     {
         try
         {
@@ -34,6 +58,28 @@ internal class PulseNexus(ChannelReader<IPulse> reader, IEnumerable<IFlow> pulse
                 flow.GetType().FullName,
                 pulse.GetType().FullName,
                 ex);
+            NotifyFlowFault(flow, pulse, ex);
+        }
+    }
+
+    private void NotifyFlowFault(IFlow flow, IPulse pulse, Exception exception)
+    {
+        var callback = diagnosticsOptions.Value.FlowFault;
+        if (callback is null)
+            return;
+
+        try
+        {
+            callback(new PulseFlowFaultContext
+            {
+                FlowType = flow.GetType(),
+                Pulse = pulse,
+                Exception = exception
+            });
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("[Frank.PulseFlow] PulseFlowDiagnosticsOptions.FlowFault callback threw: {0}", ex);
         }
     }
 }

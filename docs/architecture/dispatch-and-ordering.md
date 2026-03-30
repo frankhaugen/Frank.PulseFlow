@@ -40,7 +40,11 @@ Handlers receive the **`CancellationToken`** from the host. When shutdown is req
 If an **`IFlow`** throws while handling a pulse, **`PulseNexus`** catches the exception (except when the operation was cancelled because the host is stopping), records it with **`System.Diagnostics.Trace.TraceError`**, and **continues** processing other flows for that pulse and **later** pulses.
 
 - **Operational implication:** one bad handler does not permanently stop the channel consumer.
-- **Observability:** attach a trace listener in development or monitoring if you rely on noticing these failures; they are not written through **`ILogger`** by default (avoiding feedback loops with **Frank.PulseFlow.Logging**).
+- **Observability:** attach a trace listener in development or monitoring if you rely on noticing these failures; they are not written through **`ILogger`** by default (avoiding feedback loops with **Frank.PulseFlow.Logging**). Optionally configure **`ConfigurePulseFlowDiagnostics`** with a **`FlowFault`** callback for structured handling alongside trace.
+
+## Unmatched pulses
+
+When no registered **`IFlow`** returns true from **`CanHandle`** for the pulse’s runtime type, the pulse is skipped. By default there is no trace or metric; use **`ConfigurePulseFlowDiagnostics`** and **`UnmatchedPulse`** if you need visibility.
 
 ## See also
 

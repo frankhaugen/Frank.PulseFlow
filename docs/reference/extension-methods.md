@@ -22,6 +22,11 @@ Runs the delegate with a **`IFlowBuilder`** so you can chain **`AddFlow<T>()`** 
 - Registers **`PulseNexus`** hosted service if not present.
 - Registers **`IConduit`** → **`Conduit`** if missing.
 - Registers **`Channel<IPulse>`** via **`AddChannel<IPulse>()`** if missing.
+- Registers **`IOptions<PulseFlowDiagnosticsOptions>`** (via **`AddOptions`**) the first time **`PulseNexus`** is wired, so **`ConfigurePulseFlowDiagnostics`** can run without extra setup.
+
+### `ConfigurePulseFlowDiagnostics(Action<PulseFlowDiagnosticsOptions> configure)`
+
+Binds optional **`UnmatchedPulse`** and **`FlowFault`** callbacks on **`PulseFlowDiagnosticsOptions`**. When unset, behavior matches the pre-diagnostics defaults: unmatched pulses are skipped silently; flow faults still emit **`System.Diagnostics.Trace.TraceError`**. Callbacks are invoked in a **try/catch** so user code cannot break the nexus.
 
 ## `ILoggingBuilder` (Frank.PulseFlow.Logging)
 

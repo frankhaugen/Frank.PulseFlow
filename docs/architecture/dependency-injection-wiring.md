@@ -12,6 +12,7 @@ Calling **`AddPulseFlow`** (any overload) eventually ensures:
 | `IConduit` → `Conduit` | Singleton | First registration wins if already present |
 | Each `IFlow` | Singleton | Multiple `IFlow` registrations coexist |
 | `PulseNexus` | Hosted service | Single `BackgroundService` consumer |
+| `IOptions<PulseFlowDiagnosticsOptions>` | Options | Registered (via `AddOptions`) the first time `PulseNexus` is wired; configure with `ConfigurePulseFlowDiagnostics` |
 
 **`AddPulseFlow<TPulse, THandler>`** additionally registers:
 
@@ -25,7 +26,7 @@ The extension methods use **`Any(...)`** checks to avoid duplicate **`IFlow`**, 
 
 ## Constructor injection in `PulseNexus`
 
-The internal **`PulseNexus`** type is constructed with **`ChannelReader<IPulse>`** and **`IEnumerable<IFlow>`**. The DI container resolves **all** registered **`IFlow`** implementations into the enumerable.
+The internal **`PulseNexus`** type is constructed with **`ChannelReader<IPulse>`**, **`IEnumerable<IFlow>`**, and **`IOptions<PulseFlowDiagnosticsOptions>`**. The DI container resolves **all** registered **`IFlow`** implementations into the enumerable.
 
 ## Frank.Channels.DependencyInjection
 

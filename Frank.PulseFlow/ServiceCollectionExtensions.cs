@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+
 namespace Frank.PulseFlow;
 
 /// <summary>
@@ -54,7 +56,10 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<IFlow, TFlow>();
         
         if (!services.Any(service => service.ServiceType == typeof(BackgroundService) && service.ImplementationType == typeof(PulseNexus)))
+        {
+            services.AddOptions<PulseFlowDiagnosticsOptions>();
             services.AddHostedService<PulseNexus>();
+        }
         
         if (services.All(service => service.ServiceType != typeof(IConduit)))
             services.AddSingleton<IConduit, Conduit>();
@@ -62,6 +67,22 @@ public static class ServiceCollectionExtensions
         if (services.All(service => service.ServiceType != typeof(Channel<IPulse>)))
             services.AddChannel<IPulse>();
         
+        return services;
+    }
+
+    /// <summary>
+    /// Registers configuration for <see cref="PulseFlowDiagnosticsOptions"/> (unmatched pulses and flow faults).
+    /// Safe to call before or after <see cref="AddPulseFlow{TFlow}"/>; options are bound when the host starts.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configureOptions">Configures diagnostic callbacks.</param>
+    /// <returns>The service collection.</returns>
+    public static IServiceCollection ConfigurePulseFlowDiagnostics(
+        this IServiceCollection services,
+        Action<PulseFlowDiagnosticsOptions> configureOptions)
+    {
+        ArgumentNullException.ThrowIfNull(configureOptions);
+        services.Configure(configureOptions);
         return services;
     }
 }
