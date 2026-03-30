@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Frank.PulseFlow.Logging;
 
@@ -75,5 +75,9 @@ public sealed class LogPulse : BasePulse
     /// [LogLevel] (EventId) CategoryName: 'Message'
     /// Exception
     /// </returns>
-    public override string ToString() => $"[{LogLevel}] ({EventId}) {CategoryName}: '{Message}'\n\t{Exception}";
+    public override string ToString() =>
+        Exception is null
+            ? $"[{LogLevel}] ({EventId}) {CategoryName}: '{Message}'"
+            : $"[{LogLevel}] ({EventId}) {CategoryName}: '{Message}'\n\t{Exception}";
+
 }

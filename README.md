@@ -18,6 +18,7 @@ ___
 
 ## Table of Contents
 
+- **[Structured documentation](docs/README.md)** (concepts, architecture, guides, reference)
 - [Overview](#overview)
   - [Key Features](#key-features)
   - [Illustration](#illustration)

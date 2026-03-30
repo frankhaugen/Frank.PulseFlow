@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 
 using FluentAssertions;
 
@@ -7,6 +8,7 @@ using Frank.Reflection;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 using Xunit.Abstractions;
 using Frank.Testing.TestBases;
@@ -15,7 +17,8 @@ using Microsoft.Extensions.Options;
 
 namespace Frank.PulseFlow.Tests;
 
-public class PulseFlowTests(ITestOutputHelper outputHelper) : HostApplicationTestBase(outputHelper)
+public class PulseFlowTests(ITestOutputHelper outputHelper)
+    : HostApplicationTestBase(outputHelper, LogLevel.Information, null!)
 {
     private readonly ITestOutputHelper _outputHelper = outputHelper;
     private readonly TestPulseContainer _container = new();
@@ -33,7 +36,8 @@ public class PulseFlowTests(ITestOutputHelper outputHelper) : HostApplicationTes
         builder.Services.AddHostedService<MyService>();
         builder.Services.AddSingleton(_container);
         
-        builder.Services.Configure<FileLoggerSettings>(x => x.LogPath = "logs.log");
+        builder.Services.Configure<FileLoggerSettings>(x =>
+            x.LogPath = Path.Combine(Path.GetTempPath(), $"Frank.PulseFlow.Tests-{Guid.NewGuid():N}.log"));
         _outputHelper.WriteTable(builder.Services.Select(x => new { Service = x.ServiceType.GetFriendlyName(), Implementation = x.ImplementationType?.GetFriendlyName(), x.Lifetime }).OrderBy(x => x.Service));
         return Task.CompletedTask;
     }

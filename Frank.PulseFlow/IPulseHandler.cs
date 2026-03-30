@@ -1,8 +1,9 @@
 namespace Frank.PulseFlow;
 
-/// IPulseHandler Interface
-/// Represents a handler for processing pulses.
-/// /// <typeparam name="T">The type of pulse to handle.</typeparam>
+/// <summary>
+/// Handles pulses of type <typeparamref name="T"/> for PulseFlow.
+/// </summary>
+/// <typeparam name="T">The pulse type to handle.</typeparam>
 public interface IPulseHandler<in T> where T : IPulse
 {
     /// <summary>

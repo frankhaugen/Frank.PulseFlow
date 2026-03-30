@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="AGENTS.md" />
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="icon.png" />
+    <File Path="LICENSE" />
+    <File Path="MAINTAINERS.md" />
+    <File Path="README.md" />
+    <File Path="STYLE.md" />
+    <File Path="docs/README.md" />
+  </Folder>
+  <Project Path="Frank.PulseFlow.Logging/Frank.PulseFlow.Logging.csproj" />
+  <Project Path="Frank.PulseFlow.Tests/Frank.PulseFlow.Tests.csproj" />
+  <Project Path="Frank.PulseFlow/Frank.PulseFlow.csproj" />
+</Solution>

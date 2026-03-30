@@ -23,7 +23,7 @@ All contributions to this repository should follow a few simple rules:
 2. Install the latest version of [.NET (Core)](https://dotnet.microsoft.com/download)
 3. Install the latest version of [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) (or your preferred editor)
 4. Clone the forked repository to your local machine
-5. Open the solution in Visual Studio or Visual Studio Code
+5. Open `Frank.PulseFlow.slnx` in Visual Studio 2022 (17.13+), JetBrains Rider, or Visual Studio Code with the C# Dev Kit
 6. Create a branch for your changes
 7. Make your changes
 8. Build and test your changes

@@ -9,7 +9,6 @@ public class PulseFlowLoggerScope<TState> : IDisposable
     /// <summary>
     /// Gets or sets the state of the object.
     /// </summary>
-    /// <typeparam name="TState">The type of the state.</typeparam>
     /// <returns>The current state of the object.</returns>
     public TState? State { get; private set; }
 
