@@ -97,7 +97,7 @@ This fixes the **invalid cast** that rejected arbitrary `TState` types. **Messag
 
 Log pulses share **`Channel<IPulse>`** with domain pulses. **Bursty logging** can **delay** domain processing **without** obvious coupling in application code.
 
-**Mitigation strategies (application-level):** separate channels (not supported first-class today), **rate limiting** in log-handling flows, or **not** using PulseFlow for **all** logging—only for **audited** subsets. For **handler faults** and **no-match** pulses on the same channel, the core package’s optional **`ConfigurePulseFlowDiagnostics`** applies to **domain** dispatch, not to **`LogPulse`** construction inside **`PulseFlowLogger`**.
+**Mitigation strategies (application-level):** separate channels (not supported first-class today), **rate limiting** in log-handling flows, or **not** using PulseFlow for **all** logging—only for **audited** subsets.
 
 ---
 

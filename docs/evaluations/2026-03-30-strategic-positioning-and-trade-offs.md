@@ -61,9 +61,7 @@ The test suite mixes **fast unit tests** (`PulseFlowLoggerTests`, `GenericFlowTe
 
 1. **Benchmarks** + guidance on **bounded channels** and **handler time budgets**.
 2. **Optional** async logging pipeline **only** if users prove **sync `Log`** is a **bottleneck**.
-3. **Richer diagnostics** only if needed beyond today’s **`ConfigurePulseFlowDiagnostics`** (e.g. metrics hooks, `EventSource`) — see [Observability](2026-03-30-observability-faults-and-operations.md).
-
-**Shipped (2026-03):** optional **`PulseFlowDiagnosticsOptions`** (**`UnmatchedPulse`**, **`FlowFault`**) via **`ConfigurePulseFlowDiagnostics`**, plus **`IPulse.Id`** on fault trace lines — closes the earlier “silent no-match / trace-only faults” gap for hosts that wire callbacks or listeners.
+3. **First-party metrics or `EventSource`** only if **`ConfigurePulseFlowDiagnostics`** proves insufficient for host telemetry needs.
 
 ---
 

@@ -10,7 +10,7 @@
 
 The runtime is **small, legible, and appropriate** for a single-process “bus” where **one consumer loop** serializes **dequeue** but **fan-out per message** is explicitly parallel. The recent addition of **per-flow exception isolation** materially improves **liveness** versus an earlier design where one throwing `IFlow` could fault the entire `WhenAll` and stall or tear down the hosted service.
 
-**Residual risks** are mostly about **implicit coupling between slow handlers and head-of-line blocking**, **no-match visibility only when hosts opt into diagnostics**, and **unbounded `IEnumerable<IFlow>` materialization** every pulse.
+**Residual risks** are mostly **implicit coupling between slow handlers and head-of-line blocking** and **unbounded `IEnumerable<IFlow>` materialization** every pulse. **No-match** and **handler fault** visibility are available via **`ConfigurePulseFlowDiagnostics`** and **`Trace`** (see reference docs).
 
 ---
 
@@ -45,15 +45,9 @@ Matching flows run **concurrently** via `Task.WhenAll`. Shared mutable state **w
 
 **Deep consequence:** The library **encourages** a microservices-like “multiple subscribers” mental model, but **in-process** parallelism is **not** the same as message broker fan-out with independent consumer groups. Subscribers **share** the same process heap and the **same dequeue cursor**.
 
-### 2.3 No-handler case
+### 2.3 No-handler and diagnostics
 
-If `flows.Length == 0`, the pulse is **skipped**. **Default:** no trace from PulseFlow (same as before diagnostics). **Optional:** `NotifyUnmatched` invokes **`PulseFlowDiagnosticsOptions.UnmatchedPulse`** when configured via **`ConfigurePulseFlowDiagnostics`**, so hosts can log, meter, or assert without changing dispatch semantics.
-
-**Recommendation (product):** Enable **`UnmatchedPulse`** in environments where mis-routing must be visible; **dead-letter queues** and **feature flags** remain application concerns.
-
-### 2.4 Diagnostics hooks (summary)
-
-**`NotifyUnmatched`** and **`NotifyFlowFault`** read **`IOptions<PulseFlowDiagnosticsOptions>`**; callbacks are wrapped in **try/catch** so user code cannot fault the reader loop. See **`PulseNexus`** for the full implementation alongside **`InvokeFlowAsync`**.
+If `flows.Length == 0`, the pulse is **skipped**; **`NotifyUnmatched`** calls **`UnmatchedPulse`** when configured (**`ConfigurePulseFlowDiagnostics`**), otherwise the nexus emits **no** trace for that case. **`NotifyFlowFault`** mirrors that pattern for handler exceptions after **`Trace.TraceError`**. Callbacks are wrapped in **try/catch** so user code cannot fault the reader loop.
 
 ---
 
@@ -99,12 +93,7 @@ If `flows.Length == 0`, the pulse is **skipped**. **Default:** no trace from Pul
 - **`Trace.TraceError`** includes **`IPulse.Id`** for correlation alongside CLR type names.
 - Optional **`FlowFault`** callback supplies structured context without forcing **`ILogger`**.
 
-**Weaknesses:**
-
-- **`Trace.TraceError`** is still easy to **miss** in production unless listeners are configured.
-- **Swallowed handler exceptions** mean **metrics and alerting** do not move unless traces or **`FlowFault`** are wired.
-
-See the companion evaluation [Observability, faults, and operations](2026-03-30-observability-faults-and-operations.md).
+**Remaining limits:** **`Trace`** requires host listeners; **first-party metrics** and **`Activity`** integration are still **out of scope** for the core library—use **`FlowFault`** / **`UnmatchedPulse`** or external telemetry.
 
 ---
 
@@ -117,6 +106,4 @@ See the companion evaluation [Observability, faults, and operations](2026-03-30-
 
 ## 6. Conclusion
 
-The core runtime is **coherent** for its stated niche. **Optional diagnostics** address **no-match** and **fault** visibility without **`ILogger`**; **trace lines** include **`IPulse.Id`**. Remaining debt is **trace-only** defaults for teams that do not configure listeners or callbacks, plus **implicit performance contracts** (head-of-line blocking, channel config elsewhere).
-
-**If the library grows:** immutable dispatch tables, documented **handler latency** / timeout patterns, and application-level **dead-letter** policies beyond callbacks.
+The core runtime is **coherent** for its stated niche. **Forward-looking:** immutable dispatch tables, documented **handler latency** / timeout patterns, and optional **first-party metrics** if demand appears.
