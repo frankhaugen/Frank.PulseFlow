@@ -16,24 +16,30 @@ Registration APIs are **ergonomic** and **idempotent** in the common case (multi
 
 ### 2.1 `AddPulseFlow<TFlow>`
 
-```52:65:Frank.PulseFlow/ServiceCollectionExtensions.cs
+```54:70:Frank.PulseFlow/ServiceCollectionExtensions.cs
         if (!services.Any(service => service.ServiceType == typeof(IFlow) && service.ImplementationType == typeof(TFlow)))
             services.AddSingleton<IFlow, TFlow>();
         
         if (!services.Any(service => service.ServiceType == typeof(BackgroundService) && service.ImplementationType == typeof(PulseNexus)))
+        {
+            services.AddOptions<PulseFlowDiagnosticsOptions>();
             services.AddHostedService<PulseNexus>();
+        }
         
         if (services.All(service => service.ServiceType != typeof(IConduit)))
             services.AddSingleton<IConduit, Conduit>();
         
         if (services.All(service => service.ServiceType != typeof(Channel<IPulse>)))
             services.AddChannel<IPulse>();
+        
+        return services;
 ```
 
 **Strengths:**
 
 - Prevents duplicate **`IFlow` registrations** for the same implementation type.
 - Ensures **single** `PulseNexus` and **single** `Channel<IPulse>` / `IConduit`.
+- Registers **`AddOptions<PulseFlowDiagnosticsOptions>()`** the first time **`PulseNexus`** is added (see **`ConfigurePulseFlowDiagnostics`**).
 
 **Limits:**
 
@@ -61,7 +67,7 @@ PulseFlow **does not** abstract channel options. **Evaluation:**
 
 ## 4. `PulseNexus` constructor injection
 
-`PulseNexus` receives **`IEnumerable<IFlow>`**. In Microsoft.Extensions.DependencyInjection, this resolves **all** registered `IFlow` services. **Order** follows registration order **in typical containers**, but **this is not a guaranteed public API contract** across containers or future DI versions.
+`PulseNexus` receives **`ChannelReader<IPulse>`**, **`IEnumerable<IFlow>`**, and **`IOptions<PulseFlowDiagnosticsOptions>`**. In Microsoft.Extensions.DependencyInjection, the enumerable resolves **all** registered `IFlow` services. **Order** follows registration order **in typical containers**, but **this is not a guaranteed public API contract** across containers or future DI versions.
 
 **Deep impact:** Because handlers for one pulse run **in parallel**, **order** is usually irrelevant **unless** flows contend on shared resources—then **order** can influence **race** outcomes under load.
 

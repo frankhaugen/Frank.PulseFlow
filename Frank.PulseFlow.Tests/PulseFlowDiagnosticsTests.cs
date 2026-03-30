@@ -14,7 +14,7 @@ public sealed class PulseFlowDiagnosticsTests
     {
         var unmatched = new List<PulseUnmatchedContext>();
         var builder = Host.CreateApplicationBuilder([]);
-        builder.Services.Configure<PulseFlowDiagnosticsOptions>(o =>
+        builder.Services.ConfigurePulseFlowDiagnostics(o =>
         {
             o.UnmatchedPulse = unmatched.Add;
         });
@@ -42,7 +42,7 @@ public sealed class PulseFlowDiagnosticsTests
     {
         var faults = new List<PulseFlowFaultContext>();
         var builder = Host.CreateApplicationBuilder([]);
-        builder.Services.Configure<PulseFlowDiagnosticsOptions>(o =>
+        builder.Services.ConfigurePulseFlowDiagnostics(o =>
         {
             o.FlowFault = faults.Add;
         });

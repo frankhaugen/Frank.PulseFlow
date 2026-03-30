@@ -6,13 +6,14 @@ The core library for in-process pulse messaging.
 
 - **Abstractions:** `IPulse`, `IConduit`, `IFlow`, `IPulseHandler<T>`, `IFlowBuilder`
 - **Registration:** `ServiceCollectionExtensions.AddPulseFlow*` on `IServiceCollection`
-- **Types for apps:** `BasePulse`, `IncompatibleFlowException`
+- **Types for apps:** `BasePulse`, `IncompatibleFlowException`, optional `PulseFlowDiagnosticsOptions` / `ConfigurePulseFlowDiagnostics` for unmatched pulses and flow faults
 - **Internal runtime:** `PulseNexus`, `Conduit`, `GenericFlow`, `FlowBuilder` (not intended for direct use)
 
 ## Dependencies
 
 - **Frank.Channels.DependencyInjection** — registers `Channel<IPulse>` and writer/reader for DI
 - **Microsoft.Extensions.Hosting.Abstractions** — `BackgroundService` for `PulseNexus`
+- **Microsoft.Extensions.Options** — `IOptions<PulseFlowDiagnosticsOptions>` for optional diagnostics
 
 ## Typical usage
 

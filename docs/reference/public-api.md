@@ -14,8 +14,8 @@ This is a concise map of **documented public** types in **Frank.PulseFlow** and 
 | `IFlowBuilder` | Interface | Fluent registration (`AddFlow<T>`) |
 | `ServiceCollectionExtensions` | Static class | `AddPulseFlow` overloads, `ConfigurePulseFlowDiagnostics` |
 | `PulseFlowDiagnosticsOptions` | Class | Optional callbacks for unmatched pulses and flow faults |
-| `PulseUnmatchedContext` | Struct | Pulse type and instance when no `IFlow` matched |
-| `PulseFlowFaultContext` | Struct | Flow type, pulse type, exception (non-cancellation faults) |
+| `PulseUnmatchedContext` | Class | Pulse type and instance when no `IFlow` matched |
+| `PulseFlowFaultContext` | Class | Flow type, pulse instance, exception (non-cancellation faults) |
 | `IncompatibleFlowException` | Exception | `GenericFlow` guard |
 
 ## Frank.PulseFlow.Logging

@@ -7,7 +7,7 @@
 For each pulse read from the channel:
 
 1. Resolve all flows where **`IFlow.CanHandle(pulse.GetType())`** is true.
-2. Run **`HandleAsync`** on **all** matching flows **concurrently** via **`Task.WhenAll`**, with **per-flow exception isolation**: a throwing flow is logged via **`Trace.TraceError`** and does not stop sibling flows or the reader loop (cancellation from host shutdown is still propagated).
+2. Run **`HandleAsync`** on **all** matching flows **concurrently** via **`Task.WhenAll`**, with **per-flow exception isolation**: a throwing flow is logged via **`Trace.TraceError`** (including **`IPulse.Id`**) and does not stop sibling flows or the reader loop (cancellation from host shutdown is still propagated). Optional **`FlowFault`** diagnostics can observe faults without using **`ILogger`**.
 
 There is **one** reader loop; pulses are processed **one at a time** from the channel’s perspective, but **handlers for a single pulse** may run **in parallel**.
 

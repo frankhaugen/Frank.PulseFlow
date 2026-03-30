@@ -6,12 +6,12 @@ namespace Frank.PulseFlow;
 public interface IPulse
 {
     /// <summary>
-    /// Gets or inits the unique identifier of the property.
+    /// Gets or inits the unique identifier of the pulse.
     /// </summary>
     public Guid Id { get; init; }
 
     /// <summary>
-    /// Gets or inits the created date and time of the object.
+    /// Gets or inits when the pulse was created.
     /// </summary>
     public DateTime Created { get; init; }
 }

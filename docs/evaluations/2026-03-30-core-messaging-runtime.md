@@ -10,7 +10,7 @@
 
 The runtime is **small, legible, and appropriate** for a single-process “bus” where **one consumer loop** serializes **dequeue** but **fan-out per message** is explicitly parallel. The recent addition of **per-flow exception isolation** materially improves **liveness** versus an earlier design where one throwing `IFlow` could fault the entire `WhenAll` and stall or tear down the hosted service.
 
-**Residual risks** are mostly about **implicit coupling between slow handlers and head-of-line blocking**, **silent drops when no flow matches**, and **unbounded `IEnumerable<IFlow>` materialization** every pulse.
+**Residual risks** are mostly about **implicit coupling between slow handlers and head-of-line blocking**, **no-match visibility only when hosts opt into diagnostics**, and **unbounded `IEnumerable<IFlow>` materialization** every pulse.
 
 ---
 
@@ -18,15 +18,21 @@ The runtime is **small, legible, and appropriate** for a single-process “bus�
 
 ### 2.1 Dequeue granularity
 
-```9:17:Frank.PulseFlow/Internal/PulseNexus.cs
+```13:26:Frank.PulseFlow/Internal/PulseNexus.cs
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
         await foreach (IPulse pulse in reader.ReadAllAsync(stoppingToken))
         {
             var flows = pulseFlows.Where(x => x.CanHandle(pulse.GetType())).ToArray();
             if (flows.Length == 0)
+            {
+                NotifyUnmatched(pulse);
                 continue;
+            }
 
             await Task.WhenAll(flows.Select(flow => InvokeFlowAsync(flow, pulse, stoppingToken)));
         }
+    }
 ```
 
 **Implication:** The channel reader does **not** advance to the next pulse until **all** invocations for the current pulse complete (including awaited work inside `HandleAsync`). This is **not** “process one pulse per flow independently off a shared queue”; it is **strict head-of-line blocking** at the nexus.
@@ -41,9 +47,9 @@ Matching flows run **concurrently** via `Task.WhenAll`. Shared mutable state **w
 
 ### 2.3 No-handler case
 
-If `flows.Length == 0`, the pulse is **dropped** with **no trace** from PulseFlow itself. That may be intentional (optional audit flows), but in many systems this is a **silent logic error** (typo in `CanHandle`, wrong pulse type, missing registration).
+If `flows.Length == 0`, the pulse is **skipped**. **Default:** no trace from PulseFlow (same as before diagnostics). **Optional:** `NotifyUnmatched` invokes **`PulseFlowDiagnosticsOptions.UnmatchedPulse`** when configured via **`ConfigurePulseFlowDiagnostics`**, so hosts can log, meter, or assert without changing dispatch semantics.
 
-**Recommendation (product):** Consider an optional **“dead letter”** hook: delegate, `IOptions`, or `IFlow` that runs when no flow matched—possibly behind a feature flag to avoid noise.
+**Recommendation (product):** Enable **`UnmatchedPulse`** in environments where mis-routing must be visible; **dead-letter queues** and **feature flags** remain application concerns.
 
 ---
 
@@ -57,8 +63,8 @@ If `flows.Length == 0`, the pulse is **dropped** with **no trace** from PulseFlo
 
 ## 4. Exception isolation (`InvokeFlowAsync`)
 
-```20:37:Frank.PulseFlow/Internal/PulseNexus.cs
-    private static async Task InvokeFlowAsync(IFlow flow, IPulse pulse, CancellationToken stoppingToken)
+```47:67:Frank.PulseFlow/Internal/PulseNexus.cs
+    private async Task InvokeFlowAsync(IFlow flow, IPulse pulse, CancellationToken stoppingToken)
     {
         try
         {
@@ -71,10 +77,12 @@ If `flows.Length == 0`, the pulse is **dropped** with **no trace** from PulseFlo
         catch (Exception ex)
         {
             Trace.TraceError(
-                "[Frank.PulseFlow] Flow {0} failed while handling pulse {1}: {2}",
+                "[Frank.PulseFlow] Flow {0} failed while handling pulse {1} (pulseId={2}): {3}",
                 flow.GetType().FullName,
                 pulse.GetType().FullName,
+                pulse.Id,
                 ex);
+            NotifyFlowFault(flow, pulse, ex);
         }
     }
 ```
@@ -84,12 +92,13 @@ If `flows.Length == 0`, the pulse is **dropped** with **no trace** from PulseFlo
 - Preserves **host shutdown** semantics by rethrowing cancellation tied to `stoppingToken`.
 - Prevents **one bad flow** from killing sibling flows for the same pulse.
 - Avoids routing failure logs through `ILogger` in a way that would **recurse** into `PulseFlow.Logging`.
+- **`Trace.TraceError`** includes **`IPulse.Id`** for correlation alongside CLR type names.
+- Optional **`FlowFault`** callback supplies structured context without forcing **`ILogger`**.
 
 **Weaknesses:**
 
-- **`Trace.TraceError`** is easy to **miss** in production unless listeners are configured.
-- **Swallowed exceptions** mean **metrics and alerting** do not move unless something external observes traces.
-- **No correlation id** tying failures to `IPulse.Id` in the trace message (only type names).
+- **`Trace.TraceError`** is still easy to **miss** in production unless listeners are configured.
+- **Swallowed handler exceptions** mean **metrics and alerting** do not move unless traces or **`FlowFault`** are wired.
 
 See the companion evaluation [Observability, faults, and operations](2026-03-30-observability-faults-and-operations.md).
 
@@ -104,6 +113,6 @@ See the companion evaluation [Observability, faults, and operations](2026-03-30-
 
 ## 6. Conclusion
 
-The core runtime is **coherent** for its stated niche. The main engineering debt is **operational visibility** (no-match drops, trace-only errors) and **implicit performance contracts** (head-of-line blocking, channel config elsewhere).
+The core runtime is **coherent** for its stated niche. **Optional diagnostics** address **no-match** and **fault** visibility without **`ILogger`**; **trace lines** include **`IPulse.Id`**. Remaining debt is **trace-only** defaults for teams that do not configure listeners or callbacks, plus **implicit performance contracts** (head-of-line blocking, channel config elsewhere).
 
-**Priority improvements if the library grows:** optional dead-letter path, structured error reporting with `IPulse.Id`, and documented **expected handler latency** / timeout patterns for consumers.
+**If the library grows:** immutable dispatch tables, documented **handler latency** / timeout patterns, and application-level **dead-letter** policies beyond callbacks.

@@ -3,7 +3,7 @@
     <PropertyGroup>
         <IsPackable>true</IsPackable>
         <OutputType>Library</OutputType>
-        <Description>PulseFlow uses Channel -mechanism for internal messaging</Description>
+        <Description>In-process pulse messaging over System.Threading.Channels with Microsoft.Extensions.DependencyInjection.</Description>
         <PackageTags>Pulse,Flow,PulseFlow,Frank,Frank Haugen,Messaging,In-Memory</PackageTags>
     </PropertyGroup>
 

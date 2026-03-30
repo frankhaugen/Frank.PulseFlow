@@ -37,7 +37,10 @@ internal class PulseNexus(
         }
         catch (Exception ex)
         {
-            Trace.TraceError("[Frank.PulseFlow] PulseFlowDiagnosticsOptions.UnmatchedPulse callback threw: {0}", ex);
+            Trace.TraceError(
+                "[Frank.PulseFlow] PulseFlowDiagnosticsOptions.UnmatchedPulse callback threw (pulseId={0}): {1}",
+                pulse.Id,
+                ex);
         }
     }
 
@@ -54,9 +57,10 @@ internal class PulseNexus(
         catch (Exception ex)
         {
             Trace.TraceError(
-                "[Frank.PulseFlow] Flow {0} failed while handling pulse {1}: {2}",
+                "[Frank.PulseFlow] Flow {0} failed while handling pulse {1} (pulseId={2}): {3}",
                 flow.GetType().FullName,
                 pulse.GetType().FullName,
+                pulse.Id,
                 ex);
             NotifyFlowFault(flow, pulse, ex);
         }
@@ -79,7 +83,10 @@ internal class PulseNexus(
         }
         catch (Exception ex)
         {
-            Trace.TraceError("[Frank.PulseFlow] PulseFlowDiagnosticsOptions.FlowFault callback threw: {0}", ex);
+            Trace.TraceError(
+                "[Frank.PulseFlow] PulseFlowDiagnosticsOptions.FlowFault callback threw (pulseId={0}): {1}",
+                pulse.Id,
+                ex);
         }
     }
 }

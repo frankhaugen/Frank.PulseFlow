@@ -40,7 +40,7 @@ Start at [Public API surface](reference/public-api.md) and use IDE/XML docs for 
 
 ## What happens if my `IFlow` throws?
 
-**`PulseNexus`** isolates failures: the exception is written with **`System.Diagnostics.Trace.TraceError`**, other flows for the same pulse still run, and **later pulses** are still processed. Host shutdown cancellation is not swallowed. See [Dispatch and ordering](architecture/dispatch-and-ordering.md#handler-faults-isolation).
+**`PulseNexus`** isolates failures: the exception is written with **`System.Diagnostics.Trace.TraceError`** (including **`IPulse.Id`** for correlation), other flows for the same pulse still run, and **later pulses** are still processed. Host shutdown cancellation is not swallowed. Optionally configure **`ConfigurePulseFlowDiagnostics`** with a **`FlowFault`** callback. See [Dispatch and ordering](architecture/dispatch-and-ordering.md#handler-faults-isolation).
 
 ## Why is `LogPulse.State` sometimes null?
 

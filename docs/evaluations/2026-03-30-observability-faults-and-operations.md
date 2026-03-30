@@ -14,7 +14,7 @@ Operational **observability remains host-driven** for metrics and tracing, but *
 
 ## 2. Flow failure path
 
-On non-cancellation exceptions, `PulseNexus` calls **`Trace.TraceError`** with flow type, pulse type, and exception.
+On non-cancellation exceptions, `PulseNexus` calls **`Trace.TraceError`** with flow type, pulse type, **`IPulse.Id`**, and exception. Optional **`FlowFault`** on **`PulseFlowDiagnosticsOptions`** receives the same fault context for structured handling.
 
 ### 2.1 Strengths
 
