@@ -33,9 +33,13 @@ public sealed class FileLogFlow(IOptions<MyLogOptions> options) : IFlow
 
 `ILogger` filtering is applied by the **logging factory** before your provider is invoked. When hosting tests or minimal hosts, ensure **`LoggerFilterOptions`** minimum levels allow events you expect (see test bases or `LoggingBuilder.SetMinimumLevel` as appropriate).
 
+## Scopes and correlation
+
+`ILogger.BeginScope` state is captured on **`LogPulse.Scope`** as a snapshot (**outer scopes first**, then inner). Use it in log-handling flows for correlation when you do not rely on ambient **`AsyncLocal`** in the consumer.
+
 ## Implementation note
 
-`PulseFlowLogger.Log` forwards work asynchronously via **`IConduit`**. Be aware of **sync-over-async** (`GetAwaiter().GetResult()`) in the current implementation when reasoning about deadlocks in advanced scenarios.
+`PulseFlowLogger.Log` forwards work asynchronously via **`IConduit`** using **sync-over-async** (`GetAwaiter().GetResult()`). The default **`ILoggingBuilder.AddPulseFlow()`** registration passes **`CancellationToken.None`** to **`SendAsync`** so host startup does not recurse through logger factories; custom **`PulseFlowLogger`** wiring may supply a **`CancellationToken`** when you control resolution order yourself.
 
 ## See also
 

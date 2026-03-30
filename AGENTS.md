@@ -40,9 +40,9 @@ Prefer **Release** for CI-parity checks. Do not assume tests were run unless you
 
 ## Architecture notes (for code changes)
 
-- **Dispatch:** One reader loop; for each pulse, all matching `IFlow` instances run in parallel; **per-flow exceptions are isolated** (logged with `System.Diagnostics.Trace.TraceError`, host cancellation still propagates). Optional **`PulseFlowDiagnosticsOptions`** callbacks (`ConfigurePulseFlowDiagnostics`) can observe unmatched pulses and non-cancellation faults. See `Internal/PulseNexus.cs`.
+- **Dispatch:** One reader loop; for each pulse, all matching `IFlow` instances run in parallel; **per-flow exceptions are isolated** (logged with `System.Diagnostics.Trace.TraceError`, host cancellation still propagates). Matching flows are **cached per pulse runtime type**; treat **`CanHandle`** as stable after startup. Optional **`PulseFlowDiagnosticsOptions`** callbacks (`ConfigurePulseFlowDiagnostics`) can observe unmatched pulses and non-cancellation faults. See `Internal/PulseNexus.cs`.
 - **Routing:** `GenericFlow<TPulse, THandler>` matches **`pulse.GetType() == typeof(TPulse)`** only (no subtype routing).
-- **Logging:** `PulseFlowLogger.Log` must support arbitrary `TState` (structured state extracted when the state implements the expected key/value enumerable interfaces; otherwise `LogPulse.State` is null). Avoid reintroducing unsafe casts on `state`.
+- **Logging:** `PulseFlowLogger` extracts structured `TState` when it matches key/value shapes; otherwise `LogPulse.State` is null. `BeginScope` snapshots appear on `LogPulse.Scope`. `ILoggingBuilder.AddPulseFlow()` uses `CancellationToken.None` on `SendAsync` (avoid resolving `IHostApplicationLifetime` during host logger factory setup). Avoid unsafe casts on `state`.
 
 ## Tests
 
@@ -58,6 +58,4 @@ Workflows under `.github/workflows/` call reusable workflows from **`frankhaugen
 
 - Narrative overview and diagrams: root **[README.md](README.md)**.
 - Deeper topics: **[docs/README.md](docs/README.md)**.
-- Dated engineering critiques: **[docs/evaluations/README.md](docs/evaluations/README.md)**.
-
 When adding features, update **XML docs** and, if behavior is user-visible, a short **docs/** page or **FAQ** entry where appropriate.

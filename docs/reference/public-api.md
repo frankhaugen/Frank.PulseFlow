@@ -26,7 +26,7 @@ This is a concise map of **documented public** types in **Frank.PulseFlow** and 
 | `PulseFlowLoggerProvider` | Class | `ILoggerProvider` |
 | `PulseFlowLogger` | Class | `ILogger` |
 | `PulseFlowLoggerScope<TState>` | Class | Scope disposable |
-| `LogPulse` | Class | Log payload as `IPulse` |
+| `LogPulse` | Class | Log payload as `IPulse` (`State`, `Scope`) |
 
 ## Source of truth
 

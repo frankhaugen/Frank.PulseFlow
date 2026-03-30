@@ -14,6 +14,10 @@ bool CanHandle(Type pulseType);
 
 Multiple flows may return true for the **same** `pulseType`; **`PulseNexus`** invokes **all** of them (in parallel). That is intentional **fan-out**.
 
+### Exact type matching (`GenericFlow`)
+
+**`AddPulseFlow<TPulse, THandler>`** registers **`GenericFlow<TPulse, THandler>`**, which matches **`pulse.GetType() == typeof(TPulse)`** only. **Subtypes** of **`TPulse`** do **not** route to that registration unless you add another flow or a custom **`IFlow`**. **Interface** types as **`TPulse`** only match when the **runtime** object is exactly that interface (unusual for classes). Put **schema version**, **correlation**, or **parent** identifiers on **your** pulse types when you need them—the core **`IPulse`** surface stays minimal on purpose.
+
 ## `IPulseHandler<T>`
 
 **`IPulseHandler<T>`** is a **typed** handler API:

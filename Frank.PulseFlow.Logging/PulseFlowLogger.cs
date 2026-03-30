@@ -13,6 +13,7 @@ public class PulseFlowLogger : ILogger
 {
     private readonly string _categoryName;
     private readonly IConduit _conduit;
+    private readonly CancellationToken _shutdownCancellation;
 
     /// <summary>
     /// Initializes a new instance of the PulseFlowLogger class with the specified category name, conduit, and filter options.
@@ -20,10 +21,16 @@ public class PulseFlowLogger : ILogger
     /// <param name="categoryName">The category name of the logger.</param>
     /// <param name="conduit">The conduit used for logging.</param>
     /// <param name="filterOptions">Reserved for DI compatibility; filtering is applied by the logging factory.</param>
-    public PulseFlowLogger(string categoryName, IConduit conduit, IOptionsMonitor<LoggerFilterOptions> filterOptions)
+    /// <param name="shutdownCancellation">When provided (e.g. from <c>IHostApplicationLifetime.ApplicationStopping</c>), passed to <see cref="IConduit.SendAsync"/>.</param>
+    public PulseFlowLogger(
+        string categoryName,
+        IConduit conduit,
+        IOptionsMonitor<LoggerFilterOptions> filterOptions,
+        CancellationToken shutdownCancellation = default)
     {
         _categoryName = categoryName;
         _conduit = conduit;
+        _shutdownCancellation = shutdownCancellation;
         _ = filterOptions;
     }
 
@@ -40,7 +47,12 @@ public class PulseFlowLogger : ILogger
     {
         var message = formatter.Invoke(state, exception);
         var structuredState = ExtractStructuredState(state);
-        _conduit.SendAsync(new LogPulse(logLevel, eventId, exception, _categoryName, message, structuredState), CancellationToken.None).GetAwaiter().GetResult();
+        var scopeSnapshot = PulseFlowLogScopeAmbient.Snapshot();
+        _conduit.SendAsync(
+                new LogPulse(logLevel, eventId, exception, _categoryName, message, structuredState, scopeSnapshot),
+                _shutdownCancellation)
+            .GetAwaiter()
+            .GetResult();
     }
 
     private static IReadOnlyList<KeyValuePair<string, object?>>? ExtractStructuredState<TState>(TState state)
@@ -75,5 +87,23 @@ public class PulseFlowLogger : ILogger
     /// The log scope allows grouping related log entries together.
     /// </remarks>
     /// <seealso cref="PulseFlowLoggerScope{TState}"/>
-    public IDisposable? BeginScope<TState>(TState state) where TState : notnull => new PulseFlowLoggerScope<TState>(state);
+    public IDisposable? BeginScope<TState>(TState state) where TState : notnull => new BeginScopeHandle<TState>(state);
+
+    private sealed class BeginScopeHandle<TState> : IDisposable where TState : notnull
+    {
+        private readonly IDisposable _ambientPop;
+        private readonly PulseFlowLoggerScope<TState> _legacy;
+
+        public BeginScopeHandle(TState state)
+        {
+            _ambientPop = PulseFlowLogScopeAmbient.Push(state);
+            _legacy = new PulseFlowLoggerScope<TState>(state);
+        }
+
+        public void Dispose()
+        {
+            _legacy.Dispose();
+            _ambientPop.Dispose();
+        }
+    }
 }

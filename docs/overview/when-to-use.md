@@ -15,6 +15,12 @@
 - **Strict priority queues** — the library exposes a **single** `Channel<IPulse>`; priorities require modeling (separate types, separate registrations, or separate channels) rather than a first-class priority API.
 - **Handler-per-type middleware pipelines** — there is no ordered pipeline of stages per message type; **`PulseNexus`** invokes **all matching flows in parallel** for each pulse (see [Dispatch and ordering](../architecture/dispatch-and-ordering.md)).
 - **Applications without DI** — registration is built around **`IServiceCollection`**; manual composition is possible but not the supported path today.
+- **Ultra-high-volume logging through `Frank.PulseFlow.Logging`** — **`ILogger.Log`** is synchronous and blocks on **`IConduit.SendAsync`**; profile and tune the shared channel (see [Channel configuration (production)](../guides/channel-production.md)) or limit what you route through PulseFlow.
+- **Multi-step sagas as a first-class feature** — orchestration, compensation, and long-running workflows belong in **your** flows or another library; PulseFlow is an in-process bus, not a workflow engine.
+
+## Positioning
+
+Treat PulseFlow as **“channels + DI + parallel fan-out dispatch”**, not as **distributed infrastructure** or an **enterprise service bus**. That mental model avoids **expectation drift** when comparing to MediatR pipelines, brokers, or TPL Dataflow graphs (see [Comparison with similar patterns](comparison-with-similar-patterns.md)).
 
 ## Prerequisite mindset
 

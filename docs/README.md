@@ -15,7 +15,6 @@ Welcome to the documentation for **Frank.PulseFlow** and **Frank.PulseFlow.Loggi
 | Build from source | [Building and testing](development/building.md) |
 | Quick definitions | [Glossary](glossary.md) |
 | Common questions | [FAQ](faq.md) |
-| Deep-dive critiques (architecture, ops, trade-offs) | [Evaluations index](evaluations/README.md) |
 
 ## Documentation map
 
@@ -45,6 +44,7 @@ Welcome to the documentation for **Frank.PulseFlow** and **Frank.PulseFlow.Loggi
 - [Quickstart (generic host)](guides/quickstart-host.md)
 - [Custom flows](guides/custom-flows.md)
 - [Logging integration](guides/logging-integration.md)
+- [Channel configuration (production)](guides/channel-production.md)
 - [Testing applications that use PulseFlow](guides/testing.md)
 
 ### NuGet (documentation)
@@ -62,10 +62,6 @@ Welcome to the documentation for **Frank.PulseFlow** and **Frank.PulseFlow.Loggi
 
 - [Building and testing](development/building.md)
 - [Repository layout](development/repository-layout.md)
-
-### Evaluations (dated, subject-scoped)
-
-- [Evaluations index](evaluations/README.md) — critical analysis, not tutorial prose
 
 ### Other
 

@@ -13,7 +13,7 @@ Registers **`PulseFlowLoggerProvider`** as an **`ILoggerProvider`**. Log calls t
 | `LoggingBuilderExtensions.AddPulseFlow` | Extension on `ILoggingBuilder` |
 | `PulseFlowLoggerProvider` | `ILoggerProvider` implementation |
 | `PulseFlowLogger` | `ILogger` implementation |
-| `LogPulse` | `IPulse` carrying log metadata and message |
+| `LogPulse` | `IPulse` carrying log metadata, message, structured `State`, and `Scope` (from `BeginScope`) |
 | `PulseFlowLoggerScope` | Scope support for `BeginScope` |
 
 ## Dependency
@@ -33,3 +33,4 @@ More detail: [Logging integration guide](../guides/logging-integration.md) and [
 
 - Respect **`LoggerFilterOptions`** and category rules from the host.
 - Understand **sync-over-async** in `PulseFlowLogger.Log` for advanced hosting models (see guide).
+- **`BeginScope`** contributes to **`LogPulse.Scope`** (outer-to-inner snapshot) for flows that process **`LogPulse`**.

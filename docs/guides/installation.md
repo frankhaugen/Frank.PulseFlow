@@ -17,7 +17,7 @@ dotnet add package Frank.PulseFlow.Logging
 
 ### Transitive dependency
 
-**Frank.PulseFlow** depends on **Frank.Channels.DependencyInjection**, which registers **`Channel<T>`** and related types. You do not need to reference it explicitly unless you want to configure channel options at the source.
+**Frank.PulseFlow** depends on **Frank.Channels.DependencyInjection**, which registers **`Channel<T>`** and related types. You do not need to reference it explicitly unless you want to configure channel options at the source. For production tuning, see [Channel configuration (production)](channel-production.md).
 
 ## Framework
 

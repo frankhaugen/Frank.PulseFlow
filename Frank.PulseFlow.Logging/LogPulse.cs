@@ -48,6 +48,31 @@ public sealed class LogPulse : BasePulse
     public IReadOnlyList<KeyValuePair<string, object?>>? State { get; }
 
     /// <summary>
+    /// Gets a snapshot of active logging scopes (outer to inner) when the pulse was emitted, if any.
+    /// </summary>
+    public IReadOnlyList<object?>? Scope { get; }
+
+    /// <summary>
+    /// Initializes a log pulse with no scope snapshot (use the seven-parameter overload to include scopes).
+    /// </summary>
+    /// <param name="logLevel">The level of the log event.</param>
+    /// <param name="eventId">The identifier of the log event.</param>
+    /// <param name="exception">The exception associated with the log event, if any.</param>
+    /// <param name="categoryName">The name of the log category.</param>
+    /// <param name="message">The log message.</param>
+    /// <param name="state">Structured log state, when provided by the logging framework.</param>
+    public LogPulse(
+        LogLevel logLevel,
+        EventId eventId,
+        Exception? exception,
+        string categoryName,
+        string message,
+        IReadOnlyList<KeyValuePair<string, object?>>? state)
+        : this(logLevel, eventId, exception, categoryName, message, state, null)
+    {
+    }
+
+    /// <summary>
     /// Represents a log pulse, which encapsulates information about a log event.
     /// </summary>
     /// <param name="logLevel">The level of the log event.</param>
@@ -55,8 +80,16 @@ public sealed class LogPulse : BasePulse
     /// <param name="exception">The exception associated with the log event, if any.</param>
     /// <param name="categoryName">The name of the log category.</param>
     /// <param name="message">The log message.</param>
-    /// <param name="state"></param>
-    public LogPulse(LogLevel logLevel, EventId eventId, Exception? exception, string categoryName, string message, IReadOnlyList<KeyValuePair<string, object?>>? state)
+    /// <param name="state">Structured log state, when provided by the logging framework.</param>
+    /// <param name="scope">Optional scope chain from <see cref="Microsoft.Extensions.Logging.ILogger.BeginScope{TState}"/> (outer to inner).</param>
+    public LogPulse(
+        LogLevel logLevel,
+        EventId eventId,
+        Exception? exception,
+        string categoryName,
+        string message,
+        IReadOnlyList<KeyValuePair<string, object?>>? state,
+        IReadOnlyList<object?>? scope)
     {
         LogLevel = logLevel;
         EventId = eventId;
@@ -64,6 +97,7 @@ public sealed class LogPulse : BasePulse
         CategoryName = categoryName;
         Message = message;
         State = state;
+        Scope = scope;
     }
 
     /// <summary>

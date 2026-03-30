@@ -3,7 +3,7 @@
     <PropertyGroup>
         <IsPackable>true</IsPackable>
         <OutputType>Library</OutputType>
-        <Description>This is a ILogger{T} compatible "sink" for logs that can be "hooked into", to allow to listen to logging however you wish. PulseFlow uses Channel -mechanism for internal messaging</Description>
+        <Description>ILogger provider that forwards log events as LogPulse through Frank.PulseFlow IConduit.</Description>
         <PackageTags>Pulse,Flow,PulseFlow,Frank,Frank Haugen,Messaging,In-Memory, logging, ilogger, iloggerfactory, iloggerprovider</PackageTags>
     </PropertyGroup>
 

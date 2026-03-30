@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 
@@ -10,11 +11,20 @@ internal class PulseNexus(
     IEnumerable<IFlow> pulseFlows,
     IOptions<PulseFlowDiagnosticsOptions> diagnosticsOptions) : BackgroundService
 {
+    /// <summary>
+    /// Caches matching flows per pulse runtime type. Assumes each flow's <see cref="IFlow.CanHandle"/> is
+    /// stable for the lifetime of the nexus (typical for singleton flows registered at startup).
+    /// </summary>
+    private readonly ConcurrentDictionary<Type, IFlow[]> _flowsByPulseType = new();
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await foreach (IPulse pulse in reader.ReadAllAsync(stoppingToken))
         {
-            var flows = pulseFlows.Where(x => x.CanHandle(pulse.GetType())).ToArray();
+            var pulseType = pulse.GetType();
+            var flows = _flowsByPulseType.GetOrAdd(
+                pulseType,
+                _ => pulseFlows.Where(x => x.CanHandle(pulseType)).ToArray());
             if (flows.Length == 0)
             {
                 NotifyUnmatched(pulse);

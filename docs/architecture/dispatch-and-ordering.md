@@ -17,6 +17,10 @@ For a **single** pulse, every **`IFlow`** with **`CanHandle`** true runs **at th
 - Handlers must not assume **exclusive access** to shared mutable state unless they synchronize externally.
 - If handler A must complete before handler B for the **same** pulse, you need **one** flow that orchestrates both, **or** split into **two** pulses emitted in sequence, **or** accept sequential composition inside a single handler.
 
+## Dispatch cache
+
+**`PulseNexus`** caches the array of matching **`IFlow`** instances **per pulse runtime type** after the first occurrence. Assume **`CanHandle(Type)`** is **stable** for the lifetime of the hosted service (normal for singleton flows). If a flow’s **`CanHandle`** result changes at runtime, the cache can become stale—avoid that pattern or use a custom consumer.
+
 ## Type matching
 
 **`GenericFlow<TPulse, THandler>`** uses **exact** type equality:
