@@ -12,18 +12,24 @@ The bridge is **conceptually elegant**: it unifies **observability events** with
 
 ---
 
-## 2. Synchronous `Log` over async `SendAsync`
+## 2. Constructor and `LoggerFilterOptions`
+
+**`PulseFlowLoggerProvider`** resolves **`IOptionsMonitor<LoggerFilterOptions>`** and passes it into each **`PulseFlowLogger`**. The logger **discards** the monitor in its constructor (`_ = filterOptions`) and **does not** re-apply filters inside **`Log`**, because **`LoggerFactory`** already applies **`LoggerFilterOptions`** per provider before invoking **`ILogger`**. This matches the rationale for the simplified **`IsEnabled`** implementation in §5.
+
+---
+
+## 3. Synchronous `Log` over async `SendAsync`
 
 ```39:44:Frank.PulseFlow.Logging/PulseFlowLogger.cs
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         var message = formatter.Invoke(state, exception);
         var structuredState = ExtractStructuredState(state);
-        _conduit.SendAsync(new LogPulse(...), CancellationToken.None).GetAwaiter().GetResult();
+        _conduit.SendAsync(new LogPulse(logLevel, eventId, exception, _categoryName, message, structuredState), CancellationToken.None).GetAwaiter().GetResult();
     }
 ```
 
-### 2.1 Why this matters
+### 3.1 Why this matters
 
 `ILogger.Log` is **void** and **synchronous** in the abstraction. The implementation must either:
 
@@ -31,7 +37,7 @@ The bridge is **conceptually elegant**: it unifies **observability events** with
 - **Enqueue** to a memory buffer and return (lossy / complex lifecycle), or
 - **Drop** (violates user expectations for “I logged”).
 
-### 2.2 Failure modes (deep)
+### 3.2 Failure modes (deep)
 
 1. **Thread pool starvation:** If `WriteAsync` on a **bounded** channel blocks frequently under load, **sync contexts** that call logging from few threads can **pile up**.
 2. **Deadlock (rare but real):** If `HandleAsync` for a `LogPulse` **synchronously** waits on something that requires the **same thread** that is inside `Log` (classic ASP.NET legacy patterns, UI threads, custom `SynchronizationContext`), **deadlock** is possible. Modern ASP.NET Core is largely safer, but **library code** cannot assume zero custom contexts.
@@ -41,7 +47,7 @@ The bridge is **conceptually elegant**: it unifies **observability events** with
 
 ---
 
-## 3. Structured state extraction
+## 4. Structured state extraction
 
 ```46:55:Frank.PulseFlow.Logging/PulseFlowLogger.cs
     private static IReadOnlyList<KeyValuePair<string, object?>>? ExtractStructuredState<TState>(TState state)
@@ -56,18 +62,18 @@ The bridge is **conceptually elegant**: it unifies **observability events** with
     }
 ```
 
-### 3.1 Correctness
+### 4.1 Correctness
 
 This fixes the **invalid cast** that rejected arbitrary `TState` types. **Message text** still comes from `formatter.Invoke`, so **human-readable** logs remain correct even when `State` on `LogPulse` is null.
 
-### 3.2 Costs
+### 4.2 Costs
 
 - **`ToList()`** allocates on every log for enumerable-but-not-list states. For high-volume `LogDebug` with structured templates, this is **GC pressure**.
 - **Semantic fidelity:** Some logging states are **lazy** or **single-pass** enumerables; materialization can have **subtle** effects (usually fine for Microsoft’s concrete types, but **not provable** for all third-party providers).
 
 ---
 
-## 4. `IsEnabled`
+## 5. `IsEnabled`
 
 ```66:66:Frank.PulseFlow.Logging/PulseFlowLogger.cs
     public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
@@ -79,7 +85,7 @@ This fixes the **invalid cast** that rejected arbitrary `TState` types. **Messag
 
 ---
 
-## 5. Scopes (`BeginScope`)
+## 6. Scopes (`BeginScope`)
 
 `BeginScope` returns `PulseFlowLoggerScope<TState>` which **stores state** and disposes by clearing it. **No** scope information is written to `IConduit`.
 
@@ -87,15 +93,15 @@ This fixes the **invalid cast** that rejected arbitrary `TState` types. **Messag
 
 ---
 
-## 6. Interaction with the core bus
+## 7. Interaction with the core bus
 
 Log pulses share **`Channel<IPulse>`** with domain pulses. **Bursty logging** can **delay** domain processing **without** obvious coupling in application code.
 
-**Mitigation strategies (application-level):** separate channels (not supported first-class today), **rate limiting** in log-handling flows, or **not** using PulseFlow for **all** logging—only for **audited** subsets.
+**Mitigation strategies (application-level):** separate channels (not supported first-class today), **rate limiting** in log-handling flows, or **not** using PulseFlow for **all** logging—only for **audited** subsets. For **handler faults** and **no-match** pulses on the same channel, the core package’s optional **`ConfigurePulseFlowDiagnostics`** applies to **domain** dispatch, not to **`LogPulse`** construction inside **`PulseFlowLogger`**.
 
 ---
 
-## 7. Conclusion
+## 8. Conclusion
 
 The logging bridge is **architecturally aligned** with PulseFlow’s goals but **implementation-biased** toward **correctness and simplicity** over **maximum throughput** and **full structured-log fidelity**.
 

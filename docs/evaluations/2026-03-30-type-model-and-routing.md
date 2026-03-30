@@ -28,11 +28,13 @@ The type model is a **deliberate compromise**: **`Channel<IPulse>`** keeps the *
 
 ## 3. Exact runtime matching in `GenericFlow`
 
-`CanHandle` is **`pulseType == typeof(TPulse)`**.
+```14:14:Frank.PulseFlow/Internal/GenericFlow.cs
+    public bool CanHandle(Type pulseType) => pulseType == typeof(TPulse);
+```
 
 ### 3.1 Deep implications
 
-1. **Subtype pulses** (`class DerivedPulse : MyPulse`) **do not** route to `AddPulseFlow<MyPulse, ...>`—they **fall through** unless another flow matches or they are **dropped**.
+1. **Subtype pulses** (`class DerivedPulse : MyPulse`) **do not** route to `AddPulseFlow<MyPulse, ...>`—they **fall through** unless another flow matches; the pulse is **skipped** by default, or observable via **`UnmatchedPulse`** when diagnostics are configured.
 2. **Interface-typed** pulses are **awkward**: `typeof` of concrete instance is **implementation** type, not interface—usually fine, but **interface** as `TPulse` is **impossible** for `GenericFlow`’s `typeof` check unless the **actual** object is **exactly** that interface type (rare for classes).
 
 **Evaluation:** This pushes users toward **composition over inheritance** for message types, or **explicit** custom `IFlow` routers—**not bad**, but **must be documented** loudly (done in several docs; still easy to miss).

@@ -21,5 +21,8 @@ This folder holds **dated, subject-scoped engineering evaluations** of Frank.Pul
 
 - Treat conclusions as **hypotheses to validate** in your own load and failure testing.
 - Prefer the **reference source** (the `.cs` files cited in each evaluation) when behavior is ambiguous.
+- **Line-number code fences** are approximate; if they drift from `main`, trust the repository source.
+
+**Changelog (substantive):** March 2026 — evaluations updated for **`PulseFlowDiagnosticsOptions`**, **`ConfigurePulseFlowDiagnostics`**, **`IPulse.Id`** in fault traces, and current **`PulseFlowLogger`** / **`GenericFlow`** excerpts.
 
 [← Documentation home](../README.md)

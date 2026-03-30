@@ -20,6 +20,7 @@ On non-cancellation exceptions, `PulseNexus` calls **`Trace.TraceError`** with f
 
 - **No recursion** into `ILogger` when `PulseFlow.Logging` is enabled.
 - **Low dependency** footprint.
+- **Fault traces** include **`IPulse.Id`** alongside CLR type names for correlation when listeners are attached.
 
 ### 2.2 Weaknesses (deep)
 
@@ -73,6 +74,6 @@ Teams should **layer**:
 
 ## 7. Conclusion
 
-PulseFlow is **not** operationally “opaque,” but it is **not** self-describing in production either. **Failures are discoverable** only if the host **wires** `Trace` correctly.
+PulseFlow is **not** operationally “opaque,” but it is **not** self-describing in production either unless the host **opts in**. **Failures** surface via **`System.Diagnostics.Trace`** when listeners exist, and via optional **`FlowFault`** / **`UnmatchedPulse`** callbacks without **`ILogger`**.
 
-**Library enhancement (done):** **`IOptions<PulseFlowDiagnosticsOptions>`** with **`UnmatchedPulse`** and **`FlowFault`** callbacks, configured via **`ConfigurePulseFlowDiagnostics`**, without a hard dependency on **`ILogger`**.
+**Library enhancement (done):** **`IOptions<PulseFlowDiagnosticsOptions>`** with **`UnmatchedPulse`** and **`FlowFault`**, **`ConfigurePulseFlowDiagnostics`**, and **`IPulse.Id`** in default fault trace text.

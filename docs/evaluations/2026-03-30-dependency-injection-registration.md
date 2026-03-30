@@ -52,6 +52,10 @@ Guards **`IPulseHandler<TPulse>`** and **`GenericFlow<TPulse, THandler>`** simil
 
 **Edge case:** If someone registers **two** `IFlow` implementations **both** handling the same pulse type **without** using `GenericFlow` twice (two custom flows), both run—**by design**.
 
+### 2.3 `ConfigurePulseFlowDiagnostics`
+
+**`ConfigurePulseFlowDiagnostics(Action<PulseFlowDiagnosticsOptions>)`** registers **`services.Configure<PulseFlowDiagnosticsOptions>(...)`**. It can be called **before or after** **`AddPulseFlow`**; **`AddOptions<PulseFlowDiagnosticsOptions>()`** runs the first time **`PulseNexus`** is registered. No extra package wiring is required beyond **`Microsoft.Extensions.Options`** (already referenced by the core package).
+
 ---
 
 ## 3. `Frank.Channels.DependencyInjection` coupling

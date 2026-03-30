@@ -49,7 +49,7 @@
 
 ## 5. Test strategy as quality signal
 
-The test suite mixes **fast unit tests** (`PulseFlowLoggerTests`, `GenericFlowTests`) with **host-based** integration (`PulseFlowTests`, `PulseNexusResilienceTests`). **Evaluation:** **Directionally correct**; **gaps** remain around **channel backpressure**, **shutdown races**, and **multi-threaded stress** (not necessarily required for v1 library).
+The test suite mixes **fast unit tests** (`PulseFlowLoggerTests`, `GenericFlowTests`) with **host-based** integration (`PulseFlowTests`, `PulseNexusResilienceTests`, **`PulseFlowDiagnosticsTests`**). **Evaluation:** **Directionally correct**; **gaps** remain around **channel backpressure**, **shutdown races**, and **multi-threaded stress** (not necessarily required for v1 library).
 
 ---
 
@@ -59,9 +59,11 @@ The test suite mixes **fast unit tests** (`PulseFlowLoggerTests`, `GenericFlowTe
 
 **Investment order if extending:**
 
-1. **Diagnostics hooks** (no-match, handler errors) — see [Observability](2026-03-30-observability-faults-and-operations.md).
-2. **Benchmarks** + guidance on **bounded channels** and **handler time budgets**.
-3. **Optional** async logging pipeline **only** if users prove **sync `Log`** is a **bottleneck**.
+1. **Benchmarks** + guidance on **bounded channels** and **handler time budgets**.
+2. **Optional** async logging pipeline **only** if users prove **sync `Log`** is a **bottleneck**.
+3. **Richer diagnostics** only if needed beyond today’s **`ConfigurePulseFlowDiagnostics`** (e.g. metrics hooks, `EventSource`) — see [Observability](2026-03-30-observability-faults-and-operations.md).
+
+**Shipped (2026-03):** optional **`PulseFlowDiagnosticsOptions`** (**`UnmatchedPulse`**, **`FlowFault`**) via **`ConfigurePulseFlowDiagnostics`**, plus **`IPulse.Id`** on fault trace lines — closes the earlier “silent no-match / trace-only faults” gap for hosts that wire callbacks or listeners.
 
 ---
 

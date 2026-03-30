@@ -51,6 +51,10 @@ If `flows.Length == 0`, the pulse is **skipped**. **Default:** no trace from Pul
 
 **Recommendation (product):** Enable **`UnmatchedPulse`** in environments where mis-routing must be visible; **dead-letter queues** and **feature flags** remain application concerns.
 
+### 2.4 Diagnostics hooks (summary)
+
+**`NotifyUnmatched`** and **`NotifyFlowFault`** read **`IOptions<PulseFlowDiagnosticsOptions>`**; callbacks are wrapped in **try/catch** so user code cannot fault the reader loop. See **`PulseNexus`** for the full implementation alongside **`InvokeFlowAsync`**.
+
 ---
 
 ## 3. `IConduit` / channel boundary
