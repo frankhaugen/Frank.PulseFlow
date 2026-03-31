@@ -24,7 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Frank.PulseFlow.Logging\Frank.PulseFlow.Logging.csproj" />
       <ProjectReference Include="..\Frank.PulseFlow\Frank.PulseFlow.csproj" />
     </ItemGroup>
 

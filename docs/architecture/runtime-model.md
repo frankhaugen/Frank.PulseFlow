@@ -9,7 +9,6 @@ flowchart LR
   subgraph Producers
     A[Hosted services]
     B[Controllers / grains / workers]
-    C[ILogger via PulseFlow.Logging]
   end
 
   subgraph PulseFlow core
@@ -26,7 +25,6 @@ flowchart LR
 
   A --> IC
   B --> IC
-  C --> CW
   IC --> CW
   CW --> CH
   CH --> CR
@@ -46,10 +44,6 @@ flowchart LR
 - There is **one** **`PulseNexus`** loop reading **`IPulse`** instances **sequentially** from the channel.
 - For **each** pulse, **zero or more** flows run depending on **`CanHandle`**.
 - Matching flows run **concurrently** for that pulse.
-
-## Logging package (optional)
-
-When **Frank.PulseFlow.Logging** is added, an **`ILoggerProvider`** creates **`PulseFlowLogger`** instances that **write `LogPulse`** to the **same** channel (through **`IConduit`**). Those pulses are then dispatched like any other **`IPulse`**.
 
 ## See also
 

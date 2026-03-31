@@ -30,4 +30,3 @@ The package builds with XML documentation enabled (see `Directory.Build.props` i
 ## Related
 
 - [Extension methods reference](../reference/extension-methods.md)
-- [Logging package](pulseflow-logging.md)

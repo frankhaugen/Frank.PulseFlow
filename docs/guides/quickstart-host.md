@@ -65,10 +65,6 @@ builder.Services.AddPulseFlow(b => b
 
 Or call **`AddPulseFlow<TFlow>()`** multiple times.
 
-## Logging (optional)
-
-See [Logging integration](logging-integration.md).
-
 ## See also
 
 - [Custom flows](custom-flows.md)

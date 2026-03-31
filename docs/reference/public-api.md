@@ -1,6 +1,6 @@
 # Public API surface
 
-This is a concise map of **documented public** types in **Frank.PulseFlow** and **Frank.PulseFlow.Logging**. Internal implementation types in `Frank.PulseFlow.Internal` are omitted.
+This is a concise map of **documented public** types in **Frank.PulseFlow**. Internal implementation types in `Frank.PulseFlow.Internal` are omitted.
 
 ## Frank.PulseFlow
 
@@ -17,16 +17,6 @@ This is a concise map of **documented public** types in **Frank.PulseFlow** and 
 | `PulseUnmatchedContext` | Class | Pulse type and instance when no `IFlow` matched |
 | `PulseFlowFaultContext` | Class | Flow type, pulse instance, exception (non-cancellation faults) |
 | `IncompatibleFlowException` | Exception | `GenericFlow` guard |
-
-## Frank.PulseFlow.Logging
-
-| Type | Kind | Summary |
-|------|------|---------|
-| `LoggingBuilderExtensions` | Static class | `AddPulseFlow(this ILoggingBuilder)` |
-| `PulseFlowLoggerProvider` | Class | `ILoggerProvider` |
-| `PulseFlowLogger` | Class | `ILogger` |
-| `PulseFlowLoggerScope<TState>` | Class | Scope disposable |
-| `LogPulse` | Class | Log payload as `IPulse` (`State`, `Scope`) |
 
 ## Source of truth
 

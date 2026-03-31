@@ -25,10 +25,6 @@ Most application-specific pulses inherit **`BasePulse`** for consistency.
 - Pulses on the wire are typed as **`IPulse`** inside **`Channel<IPulse>`**. Strong typing appears again at **`IPulseHandler<T>`** and inside **`IFlow`** implementations that cast or pattern-match.
 - **`GenericFlow<TPulse, THandler>`** routes only when **`pulse.GetType()`** equals **`typeof(TPulse)`** exactly—inheritance-based routing requires a custom **`IFlow`**.
 
-## Related types
-
-- **`LogPulse`** (logging package) — carries **`LogLevel`**, **`EventId`**, message text, and optional state; see [Logging package](../nuget/pulseflow-logging.md).
-
 ## See also
 
 - [Flows and handlers](flows-and-handlers.md)

@@ -14,7 +14,7 @@ Patterns that work well:
 2. Register **`AddPulseFlow*`** the same way as production.
 3. Replace **`IConduit`** with a **test double** that records pulses, **or** run the real channel and assert on side effects (files, mocks, in-memory stores).
 
-If you use **`Frank.Testing.TestBases.HostApplicationTestBase`**, pass an explicit **`LogLevel`** to the base constructor when you rely on **`Frank.PulseFlow.Logging`** so logger providers are not filtered out entirely by minimum-level configuration.
+If you use **`Frank.Testing.TestBases.HostApplicationTestBase`**, pass an explicit **`LogLevel`** to the base constructor when tests depend on **`ILogger`** output, so minimum-level filters do not silence logs unexpectedly.
 
 ## Asserting ordering
 

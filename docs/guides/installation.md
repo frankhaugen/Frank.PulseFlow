@@ -5,14 +5,11 @@
 | Package | Purpose |
 |---------|---------|
 | [Frank.PulseFlow](https://www.nuget.org/packages/Frank.PulseFlow) | Core: `IConduit`, `IFlow`, `AddPulseFlow*` |
-| [Frank.PulseFlow.Logging](https://www.nuget.org/packages/Frank.PulseFlow.Logging) | Optional: `AddPulseFlow()` for `ILogger` → `LogPulse` |
 
 ### .NET CLI
 
 ```bash
 dotnet add package Frank.PulseFlow
-# optional:
-dotnet add package Frank.PulseFlow.Logging
 ```
 
 ### Transitive dependency

@@ -28,12 +28,6 @@ Runs the delegate with a **`IFlowBuilder`** so you can chain **`AddFlow<T>()`** 
 
 Binds optional **`UnmatchedPulse`** and **`FlowFault`** callbacks on **`PulseFlowDiagnosticsOptions`**. When unset, behavior matches the pre-diagnostics defaults: unmatched pulses are skipped silently; flow faults still emit **`System.Diagnostics.Trace.TraceError`**. Callbacks are invoked in a **try/catch** so user code cannot break the nexus.
 
-## `ILoggingBuilder` (Frank.PulseFlow.Logging)
-
-### `AddPulseFlow()`
-
-Registers **`ILoggerProvider`** → **`PulseFlowLoggerProvider`** as a singleton service on the builder’s **`Services`** collection.
-
 ## See also
 
 - [Dependency injection wiring](../architecture/dependency-injection-wiring.md)

@@ -12,7 +12,6 @@
     <File Path="STYLE.md" />
     <File Path="docs/README.md" />
   </Folder>
-  <Project Path="Frank.PulseFlow.Logging/Frank.PulseFlow.Logging.csproj" />
   <Project Path="Frank.PulseFlow.Tests/Frank.PulseFlow.Tests.csproj" />
   <Project Path="Frank.PulseFlow/Frank.PulseFlow.csproj" />
 </Solution>

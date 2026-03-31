@@ -1,6 +1,6 @@
 # Frank.PulseFlow documentation
 
-Welcome to the documentation for **Frank.PulseFlow** and **Frank.PulseFlow.Logging**—in-process messaging built on `System.Threading.Channels`, integrated with `Microsoft.Extensions.DependencyInjection` and the generic host.
+Welcome to the documentation for **Frank.PulseFlow**—in-process messaging built on `System.Threading.Channels`, integrated with `Microsoft.Extensions.DependencyInjection` and the generic host.
 
 ## Start here
 
@@ -10,7 +10,6 @@ Welcome to the documentation for **Frank.PulseFlow** and **Frank.PulseFlow.Loggi
 | Install and run a minimal host | [Installation](guides/installation.md) · [Quickstart with the generic host](guides/quickstart-host.md) |
 | Learn the vocabulary (Pulse, Conduit, Nexus, Flow) | [Concepts index](concepts/README.md) |
 | See how messages move at runtime | [Runtime model](architecture/runtime-model.md) · [Dispatch and ordering](architecture/dispatch-and-ordering.md) |
-| Route `ILogger` through the same pipe | [Logging integration](guides/logging-integration.md) · [Logging package](nuget/pulseflow-logging.md) |
 | Look up APIs and registration | [Public API surface](reference/public-api.md) · [Extension methods](reference/extension-methods.md) |
 | Build from source | [Building and testing](development/building.md) |
 | Quick definitions | [Glossary](glossary.md) |
@@ -43,14 +42,12 @@ Welcome to the documentation for **Frank.PulseFlow** and **Frank.PulseFlow.Loggi
 - [Installation](guides/installation.md)
 - [Quickstart (generic host)](guides/quickstart-host.md)
 - [Custom flows](guides/custom-flows.md)
-- [Logging integration](guides/logging-integration.md)
 - [Channel configuration (production)](guides/channel-production.md)
 - [Testing applications that use PulseFlow](guides/testing.md)
 
 ### NuGet (documentation)
 
 - [Frank.PulseFlow (core)](nuget/frank-pulseflow.md)
-- [Frank.PulseFlow.Logging](nuget/pulseflow-logging.md)
 
 ### Reference
 

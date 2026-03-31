@@ -7,7 +7,6 @@ Use this checklist when moving beyond local development:
 1. **Bounded vs unbounded** — Unbounded queues hide slow consumers and can grow memory without bound. Prefer a **bounded** capacity that matches your worst acceptable backlog, or accept explicit **backpressure** / **drop** semantics from the channel package.
 2. **`BoundedChannelFullMode`** — Decide whether writers **wait**, **drop**, or **throw** when the queue is full. This choice is part of your **SLO**, not PulseFlow’s default.
 3. **Single reader** — **`PulseNexus`** is the only consumer of **`ChannelReader<IPulse>`** by design. Do not add a second reader to the same channel unless you replace the nexus model entirely.
-4. **Logging volume** — With **Frank.PulseFlow.Logging**, **`LogPulse`** shares the same channel as domain pulses. Heavy logging competes for the same capacity and reader latency; tune the channel and log levels accordingly.
 
 See [Conduit and channel](../concepts/conduit-and-channel.md) and the **Frank.Channels.DependencyInjection** documentation for API details.
 
@@ -15,4 +14,3 @@ See [Conduit and channel](../concepts/conduit-and-channel.md) and the **Frank.Ch
 
 - [Installation](installation.md)
 - [Dispatch and ordering](../architecture/dispatch-and-ordering.md)
-- [Logging integration](logging-integration.md)

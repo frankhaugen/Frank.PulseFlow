@@ -5,7 +5,6 @@ Concise instructions for AI assistants and automation working in this repository
 ## What this is
 
 - **Frank.PulseFlow** — In-process messaging over `System.Threading.Channels`, wired for `Microsoft.Extensions.DependencyInjection`: `IConduit` → `Channel<IPulse>` → internal `PulseNexus` (`BackgroundService`) → `IFlow` / `IPulseHandler<T>`.
-- **Frank.PulseFlow.Logging** — Optional `ILoggerProvider` that sends `LogPulse` through the same `IConduit`.
 - Depends on **Frank.Channels.DependencyInjection** for `Channel<T>` registration (capacity / backpressure are configured there, not in PulseFlow).
 
 ## Repository layout
@@ -13,7 +12,6 @@ Concise instructions for AI assistants and automation working in this repository
 | Path | Role |
 |------|------|
 | `Frank.PulseFlow/` | Core library |
-| `Frank.PulseFlow.Logging/` | Logging adapter |
 | `Frank.PulseFlow.Tests/` | xUnit tests |
 | `docs/` | Structured documentation ([`docs/README.md`](docs/README.md)) |
 | `Frank.PulseFlow.slnx` | Solution file (preferred entry point) |
@@ -42,12 +40,11 @@ Prefer **Release** for CI-parity checks. Do not assume tests were run unless you
 
 - **Dispatch:** One reader loop; for each pulse, all matching `IFlow` instances run in parallel; **per-flow exceptions are isolated** (logged with `System.Diagnostics.Trace.TraceError`, host cancellation still propagates). Matching flows are **cached per pulse runtime type**; treat **`CanHandle`** as stable after startup. Optional **`PulseFlowDiagnosticsOptions`** callbacks (`ConfigurePulseFlowDiagnostics`) can observe unmatched pulses and non-cancellation faults. See `Internal/PulseNexus.cs`.
 - **Routing:** `GenericFlow<TPulse, THandler>` matches **`pulse.GetType() == typeof(TPulse)`** only (no subtype routing).
-- **Logging:** `PulseFlowLogger` extracts structured `TState` when it matches key/value shapes; otherwise `LogPulse.State` is null. `BeginScope` snapshots appear on `LogPulse.Scope`. `ILoggingBuilder.AddPulseFlow()` uses `CancellationToken.None` on `SendAsync` (avoid resolving `IHostApplicationLifetime` during host logger factory setup). Avoid unsafe casts on `state`.
 
 ## Tests
 
 - **Frank.PulseFlow.Tests** has `InternalsVisibleTo` access to `Frank.PulseFlow` internals (see `Directory.Build.props`).
-- Integration-style tests using **`Frank.Testing.TestBases.HostApplicationTestBase`**: pass an explicit **`LogLevel`** to the base constructor when **`Frank.PulseFlow.Logging`** is used (e.g. `LogLevel.Information`), or log-related assertions may see no pulses.
+- Integration-style tests using **`Frank.Testing.TestBases.HostApplicationTestBase`**: pass an explicit **`LogLevel`** when your test host or assertions depend on **`ILogger`** output (minimum-level filters may otherwise silence logs).
 - Prefer **temp paths** for file sinks in tests (`Path.GetTempPath()`, unique file names)—do not write artifacts into the repo root.
 
 ## CI

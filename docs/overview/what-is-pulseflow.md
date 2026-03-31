@@ -14,10 +14,6 @@ It is **not** a distributed message bus (no Kafka/RabbitMQ/Azure Service Bus). E
 3. You optionally use **`IPulseHandler<T>`** with **`AddPulseFlow<TPulse, THandler>`** so handlers stay strongly typed.
 4. At runtime, **`IConduit.SendAsync`** writes to the channel; **`PulseNexus`** reads and dispatches.
 
-## Companion package: Frank.PulseFlow.Logging
-
-**Frank.PulseFlow.Logging** registers an **`ILoggerProvider`** that turns log events into **`LogPulse`** instances on the **same** channel, so logging can be processed by ordinary flows (files, test hooks, custom sinks) with the same threading semantics as the rest of your pulses.
-
 ## Next steps
 
 - [When to use (and when not to)](when-to-use.md)

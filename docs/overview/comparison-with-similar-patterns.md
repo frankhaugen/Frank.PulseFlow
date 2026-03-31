@@ -36,7 +36,7 @@ Dataflow offers **graph-shaped** pipelines with backpressure and linking. PulseF
 
 ## Logging pipelines (`ILogger` + providers)
 
-Standard logging uses **`ILoggerProvider`** and often synchronous or batching sinks. **Frank.PulseFlow.Logging** bridges **`ILogger`** into **`LogPulse`** so **the same channel and flows** can process logs—useful when logs and domain pulses must share ordering or fan-out rules (with the caveats documented in [Logging integration](../guides/logging-integration.md)).
+Standard logging uses **`ILoggerProvider`** and sinks that are independent of PulseFlow. Flows can inject **`ILogger<T>`** and log as usual; that does not route log events through **`IConduit`** unless you build that yourself.
 
 ## Summary
 
