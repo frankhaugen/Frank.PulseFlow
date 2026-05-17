@@ -1,3 +1,5 @@
+> **Moved to Novolis:** This library is superseded by [\`Novolis.Messaging\`](https://www.nuget.org/packages/Novolis.Messaging) from [novolis-messaging](https://github.com/Novolis-Platform/novolis-messaging). This repository is archived; do not add features here.
+
 # PulseFlow (Local Messaging With Channels)
 
 PulseFlow Local Messaging is a lightweight, high-performance messaging system that enables seamless communication, and thread-safe data transfer between different parts of an application. It's designed to be simple, flexible, and scalable, allowing for easy integration into any system architecture.
